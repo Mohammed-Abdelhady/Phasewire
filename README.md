@@ -20,7 +20,7 @@ phasewire plan "Add idempotent webhook retries" --harness codex
 phasewire status --json
 phasewire handoff create <workflow-id> --to grok
 phasewire resume <workflow-id> --harness grok
-phasewire review <workflow-id> --harness agy
+phasewire review <workflow-id> --harness claude
 phasewire open <workflow-id>
 ```
 
@@ -37,6 +37,12 @@ npm test
 npm run dev
 ```
 
+## Quality gates
+
+`npm run quality` runs structural limits, lint, strict typechecking, unit and integration tests, production builds, dependency auditing, and browser acceptance. Husky installs a fast pre-commit gate and the complete pre-push gate through `npm install`.
+
+Every authored source, test, configuration, style, schema, and documentation file is limited to 350 physical lines. Generated and vendored files such as `package-lock.json`, `dist/`, and `node_modules/` are excluded. See [Quality gates](docs/quality-gates.md) for the layer contract and failure policy.
+
 The development web app runs through Vite and proxies project API requests to the loopback service. Production `phasewire open` serves the built workbench from the on-demand local service.
 
 ## Durable and private state
@@ -47,3 +53,12 @@ Commit `.phasewire/config.json`, workflow events, approved plans, decisions, fin
 
 The service binds to loopback, validates host and origin, and requires a per-session token. Project file access is root-confined. Templates are declarative data; they do not execute package code. Deployment authorization is an explicit user event and is deliberately separate from any external deployment tool.
 
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Workflow guide](docs/workflow.md)
+- [Visual templates](docs/templates.md)
+- [Report design system](docs/report-design-system.md)
+- [Security and privacy](docs/security.md)
+- [Quality gates](docs/quality-gates.md)
+- [Contributor and harness rules](AGENTS.md)

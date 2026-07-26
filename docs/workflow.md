@@ -77,4 +77,16 @@ Authorization can be recorded only after readiness and only through an interacti
 
 ## Command namespace
 
-CLI commands always start with `phasewire`. Slash hosts use `/phasewire:<command>` and skill hosts use `$phasewire-<command>`. Bare `/plan`, `/execute`, `/review`, and `/resume` aliases are intentionally unsupported.
+CLI commands always start with `phasewire`. Install host adapters once per project or user profile:
+
+```sh
+phasewire adapters install --host all --scope project
+```
+
+After install and a host restart:
+
+- Claude Code: `/phasewire`, `/phasewire:plan`, `/phasewire:execute`, `/phasewire:review`, `/phasewire:resume`, `/phasewire:status`, `/phasewire:handoff`, `/phasewire:open`
+- Codex / Grok skill hosts: `$phasewire-plan`, `$phasewire-execute`, `$phasewire-review`, `$phasewire-resume`, …
+- Antigravity (Agy): `phasewire-*` skills and workflows under `.agent/`
+
+Bare `/plan`, `/execute`, `/review`, and `/resume` aliases remain intentionally unsupported.

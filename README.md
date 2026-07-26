@@ -24,7 +24,27 @@ phasewire review <workflow-id> --harness claude
 phasewire open <workflow-id>
 ```
 
-Slash-command adapters must use `/phasewire:plan`; skill hosts use `$phasewire-plan`. Bare `/plan`, `/execute`, `/review`, and `/resume` aliases are intentionally absent.
+## Harness adapters
+
+Install portable skills/commands so Claude Code, Codex, Grok, and Antigravity (Agy) can drive Phasewire with the unique namespace:
+
+```sh
+npm run build
+phasewire adapters install --host all --scope project
+```
+
+| Host | Triggers after install |
+|---|---|
+| Claude Code | `/phasewire`, `/phasewire:plan`, `/phasewire:execute`, `/phasewire:review`, `/phasewire:resume`, `/phasewire:status`, `/phasewire:handoff`, `/phasewire:open` |
+| Codex / Grok | `$phasewire-plan`, `$phasewire-execute`, `$phasewire-review`, `$phasewire-resume`, … |
+| Antigravity (Agy) | skills/workflows named `phasewire-*` under `.agent/` |
+
+Adapters only wrap the `phasewire` CLI. Bare `/plan`, `/execute`, `/review`, and `/resume` aliases stay intentionally absent. Restart the host session after install so slash menus refresh.
+
+```sh
+phasewire adapters install --host claude --scope project
+phasewire adapters install --host all --scope user
+```
 
 ## Development
 
@@ -35,6 +55,7 @@ npm install
 npm run build
 npm test
 npm run dev
+phasewire adapters install --host all --scope project
 ```
 
 ## Quality gates

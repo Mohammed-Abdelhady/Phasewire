@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url'
 
 import { Command } from 'commander'
 
+import { addAdapterCommands } from './commands/adapters.js'
 import { addMaintenanceCommands } from './commands/maintenance.js'
 import { addHandoffCommands, addPhaseOwnershipCommands } from './commands/ownership.js'
 import { addProgressCommands } from './commands/progress.js'
@@ -29,6 +30,7 @@ export const createProgram = (): Command => {
   addMaintenanceCommands(program)
   addTemplateCommands(program)
   addDeploymentAuthorizationCommand(program)
+  addAdapterCommands(program)
   return program
 }
 

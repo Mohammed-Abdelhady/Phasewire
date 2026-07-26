@@ -34,8 +34,11 @@ describe('CLI namespace', () => {
       'reconcile',
       'templates',
       'authorize-deployment',
+      'adapters',
     ])
     expect(program.commands.some((command) => command.name() === 'deploy')).toBe(false)
+    const adapters = program.commands.find((command) => command.name() === 'adapters')
+    expect(adapters?.commands.map((command) => command.name())).toEqual(['install'])
   })
 
   it('exposes the exact nested handoff and template commands', () => {

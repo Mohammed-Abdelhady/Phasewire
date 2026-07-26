@@ -1,0 +1,33 @@
+{
+  "name": "phasewire",
+  "version": "0.1.0",
+  "description": "Phasewire harness adapters for Codex: portable plan/execute/review/resume skills over the phasewire CLI.",
+  "author": {
+    "name": "Mohammed Abdelhady",
+    "url": "https://github.com/Mohammed-Abdelhady"
+  },
+  "homepage": "https://github.com/Mohammed-Abdelhady/Phasewire",
+  "repository": "https://github.com/Mohammed-Abdelhady/Phasewire",
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Phasewire",
+    "shortDescription": "Harness-agnostic Plan → Execute → Review control layer",
+    "longDescription": "Installs Phasewire skills that wrap the local phasewire CLI so Codex can plan, execute, review, resume, and hand off durable workflows without owning deployment.",
+    "developerName": "Mohammed Abdelhady",
+    "category": "Engineering",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/Mohammed-Abdelhady/Phasewire",
+    "defaultPrompt": [
+      "Use Phasewire to plan this change",
+      "Show Phasewire workflow status",
+      "Resume the latest Phasewire handoff"
+    ],
+    "brandColor": "#7C5CFF",
+    "screenshots": []
+  }
+}

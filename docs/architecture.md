@@ -59,3 +59,5 @@ Writes use an exclusive temporary file, flush, atomic link or rename, and integr
 
 Harness adapters receive a neutral work order containing the objective, current phase, approved decisions, artifact references, validations, expected event heads, and required output schema. A handoff packet carries the same meaning without depending on a provider transcript or active chat session.
 
+`phasewire adapters install` materializes those adapters as host skill/command files for Claude Code, Codex, Grok, and Antigravity. The install target is portable markdown plus optional plugin manifests; every skill still shells out to the `phasewire` CLI and never owns durable state.
+

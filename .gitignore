@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+.hyperflow/
+.phasewire/.runtime/
+.phasewire/**/.runtime/
+playwright-report/
+test-results/
+

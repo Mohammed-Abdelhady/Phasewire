@@ -1,0 +1,2 @@
+node scripts/quality/check-commit-message.mjs "$1"
+

@@ -143,6 +143,27 @@ describe('security invariants', () => {
     })).rejects.toThrow('incompatible with phase review')
   })
 
+  it.each([
+    '/private/machine/evidence.txt', 'C:\\private\\evidence.txt', 'C:outside.txt', '../outside/evidence.txt',
+  ])(
+    'rejects non-project review finding evidence paths: %s',
+    async (artifactPath) => {
+      const store = new WorkflowStore(await project())
+      await store.init()
+      await store.createWorkflow({ actor: OWNER, idempotencyKey: 'create', title: 'Paths', workflowId: 'finding-path' })
+      await append(store, 'finding-path', 'plan.proposed', 'plan', {})
+      await append(store, 'finding-path', 'plan.approved', 'plan', {}, USER)
+      await append(store, 'finding-path', 'execution.started', 'execute', {})
+      await append(store, 'finding-path', 'execution.completed', 'execute', {})
+      await append(store, 'finding-path', 'review.started', 'review', {})
+
+      await expect(append(store, 'finding-path', 'review.finding', 'review', {
+        artifactPath, findingId: 'unsafe', severity: 'blocking', title: 'Unsafe path',
+      })).rejects.toThrow('must be project-relative')
+      expect((await store.loadWorkflow('finding-path')).review.findings).toEqual([])
+    },
+  )
+
   it('rejects claim idempotency keys previously used by another event intent', async () => {
     const store = new WorkflowStore(await project())
     await store.init()

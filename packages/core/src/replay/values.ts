@@ -16,12 +16,24 @@ export function stringList(payload: JsonObject, key: string): readonly string[] 
   return Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === 'string') : []
 }
 
-export function artifactFrom(event: WorkflowEvent, kind: ArtifactReference['kind']): ArtifactReference | undefined {
+function safeArtifactPath(event: WorkflowEvent): string | undefined {
   const path = stringValue(event.payload, 'artifactPath')
   if (path === undefined) return undefined
-  if (posix.isAbsolute(path) || win32.isAbsolute(path) || path.split(/[\\/]/u).includes('..')) {
+  const hasUnsafeControl = [...path].some((character) => {
+    const code = character.codePointAt(0) ?? 0
+    return code < 32 || (code >= 127 && code <= 159) || code === 0x61c || code === 0x200e ||
+      code === 0x200f || (code >= 0x202a && code <= 0x202e) || (code >= 0x2066 && code <= 0x2069)
+  })
+  if (path.trim().length === 0 || posix.isAbsolute(path) || win32.parse(path).root !== '' ||
+    path.split(/[\\/]/u).includes('..') || hasUnsafeControl) {
     throw new ReplayError(`${event.type} payload.artifactPath must be project-relative`)
   }
+  return path
+}
+
+export function artifactFrom(event: WorkflowEvent, kind: ArtifactReference['kind']): ArtifactReference | undefined {
+  const path = safeArtifactPath(event)
+  if (path === undefined) return undefined
   const digest = stringValue(event.payload, 'artifactDigest')
   return { kind, path, eventId: event.eventId, ...(digest === undefined ? {} : { digest }) }
 }
@@ -40,7 +52,7 @@ export function findingFrom(event: WorkflowEvent): ReviewFinding {
   const title = stringValue(event.payload, 'title')
   if (title === undefined || title.length === 0) throw new ReplayError('review.finding requires payload.title')
   const detail = stringValue(event.payload, 'detail')
-  const artifactPath = stringValue(event.payload, 'artifactPath')
+  const artifactPath = safeArtifactPath(event)
   return {
     id, severity, title, openedByEventId: event.eventId,
     ...(detail === undefined ? {} : { detail }),
@@ -56,7 +68,7 @@ export function validationFrom(event: WorkflowEvent): ValidationResult {
     throw new ReplayError('validation.recorded requires a passed, failed, or skipped payload.status')
   }
   const summary = stringValue(event.payload, 'summary')
-  const artifactPath = stringValue(event.payload, 'artifactPath')
+  const artifactPath = safeArtifactPath(event)
   return {
     check, status, eventId: event.eventId, logicalClock: event.logicalClock,
     ...(summary === undefined ? {} : { summary }),
@@ -82,7 +94,7 @@ export function decisionFrom(event: WorkflowEvent): DecisionRecord {
   if (title === undefined || outcome === undefined) {
     throw new ReplayError('decision.recorded requires payload.title and payload.outcome')
   }
-  const artifactPath = stringValue(event.payload, 'artifactPath')
+  const artifactPath = safeArtifactPath(event)
   return {
     id: stringValue(event.payload, 'decisionId') ?? event.eventId, title, outcome, eventId: event.eventId,
     ...(artifactPath === undefined ? {} : { artifactPath }),

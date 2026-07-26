@@ -7,7 +7,7 @@ Phasewire uses the same layered checks locally, in Git hooks, and in CI. A gate 
 | Layer | Command | Purpose |
 |---|---|---|
 | Structure | `npm run quality:structure` | Enforces the 350-line maximum for authored files and excludes generated/vendor output. |
-| Static | `npm run quality:static` | Runs ESLint with zero warnings and strict TypeScript project references. |
+| Static | `npm run quality:static` | Builds `@phasewire/core` + `@phasewire/server` (typed deps), ESLint zero warnings, strict TypeScript. Prettier is available via `npm run format` / `format:check` for contributor hygiene. |
 | Tests | `npm run quality:test` | Runs deterministic kernel, security, API, CLI, and component tests. |
 | Build | `npm run quality:build` | Produces every workspace package and the optimized visual workbench. |
 | Security | `npm run quality:security` | Fails on dependency advisories at high severity or above. |

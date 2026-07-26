@@ -1,0 +1,9 @@
+# Default owners for Phasewire
+* @Mohammed-Abdelhady
+
+# Security-sensitive surfaces
+/packages/server/src/security.ts @Mohammed-Abdelhady
+/packages/core/src/security-invariants.test.ts @Mohammed-Abdelhady
+/docs/security.md @Mohammed-Abdelhady
+/CODE_QUALITY_AND_ENGINEERING.md @Mohammed-Abdelhady
+/docs/code-review.md @Mohammed-Abdelhady

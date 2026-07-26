@@ -1,12 +1,5 @@
 export type AdapterSkillId =
-  | 'phasewire'
-  | 'plan'
-  | 'execute'
-  | 'review'
-  | 'resume'
-  | 'status'
-  | 'handoff'
-  | 'open'
+  'phasewire' | 'plan' | 'execute' | 'review' | 'resume' | 'status' | 'handoff' | 'open'
 
 export interface AdapterSkill {
   readonly argumentHint: string
@@ -72,12 +65,15 @@ export const ADAPTER_SKILLS: readonly AdapterSkill[] = [
     argumentHint: '<workflow-id>',
     cli: 'phasewire review <workflow-id> --harness <host> --json',
     description:
-      'Use when starting an independent Phasewire review. Trigger with /phasewire:review or $phasewire-review.',
+      'Use when starting an independent Phasewire review (workflow and/or code). Trigger with /phasewire:review or $phasewire-review. Always apply CODE_QUALITY_AND_ENGINEERING.md multi-axis bar.',
     steps: [
       'Require a workflow id. Load `phasewire status <workflow-id> --json` before reviewing.',
+      'Read `CODE_QUALITY_AND_ENGINEERING.md` and `docs/code-review.md` before judging code or findings.',
       'Run `phasewire review <workflow-id> --harness <host> --json`.',
+      'Apply picky multi-axis review on changed code: reuse, security, correctness, re-render, perf, a11y, i18n/RTL, gate honesty.',
       'Record findings with `phasewire finding` and validations with `phasewire validate`. Blocking findings must open remediation, not be silently cleared.',
-      'Finish with `phasewire complete-review` only after evidence is recorded.',
+      'If a GitHub PR is in scope: post start comment, visual guide (`## Visual guide — what this PR does`), inline Critical/Warning notes, and finish with `Finished reviewing this one.` plus an Axes line.',
+      'Finish with `phasewire complete-review` only after evidence is recorded and blocking issues are filed or fixed.',
     ],
   },
   {

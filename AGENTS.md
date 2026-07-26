@@ -2,6 +2,10 @@
 
 These rules apply to every harness working in this repository.
 
+**Authoritative quality bar:** [`CODE_QUALITY_AND_ENGINEERING.md`](./CODE_QUALITY_AND_ENGINEERING.md)  
+**How to review PRs and workflows:** [`docs/code-review.md`](./docs/code-review.md)  
+**Gate mechanics:** [`docs/quality-gates.md`](./docs/quality-gates.md)
+
 ## Product invariants
 
 - Phasewire is a persistent, visual control layer for Plan → Execute → Review delivery loops.
@@ -29,11 +33,19 @@ These rules apply to every harness working in this repository.
 
 ## Quality gates
 
-- Before commit: `npm run quality:commit`.
+- Before commit: `npm run quality:commit` (structure, build core/server for types, lint, typecheck, format check, tests).
 - Before push: `npm run quality:push`.
 - Never bypass hooks with `--no-verify` and never weaken a gate to make it pass.
 - E2E tests use Playwright selectors from `apps/web/e2e/utils/selectors.ts`; do not use fixed sleeps.
 - A distinct feature, fix, documentation update, or tooling change receives its own Conventional Commit.
+
+## Code review (Congar bar)
+
+- Picky multi-axis: reuse, security, correctness, re-render, perf, a11y, i18n/RTL, gate honesty.
+- Every PR: start comment → visual guide → formal review with finish line + Axes line.
+- Self-authored PRs: GitHub `COMMENT` with honest Critical/Warning language.
+- Inline comments only on paths in the PR diff.
+- After fixes: resolve addressed review threads.
 
 ## Security and privacy
 

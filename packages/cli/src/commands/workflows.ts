@@ -4,7 +4,11 @@ import { PhasewireCoreFacade } from '@phasewire/server/core-facade'
 
 import { formatStatus, printResult } from '../output.js'
 import { resolveInitRoot } from '../project-root.js'
-import { createResumeInstructions, formatResumeInstructions, latestIntendedHandoff } from '../resume.js'
+import {
+  createResumeInstructions,
+  formatResumeInstructions,
+  latestIntendedHandoff,
+} from '../resume.js'
 import {
   collect,
   globalOptions,
@@ -99,7 +103,6 @@ const addLifecycle = (program: Command): void => {
       const value = await context.core.beginReview(workflowId, options.harness)
       printResult(value, context.json, mutationMessage('Review started for'))
     })
-
 }
 
 const addInspection = (program: Command): void => {
@@ -119,11 +122,13 @@ const addInspection = (program: Command): void => {
     .command('open')
     .argument('[workflow-id]')
     .option('--no-open', 'Print the URL without opening a browser')
-    .action(async (workflowId: string | undefined, options: { open: boolean }, command: Command) => {
-      const context = await projectContext(command)
-      const value = await openWorkbench(context.root, workflowId, options.open)
-      printResult(value, context.json, () => value.url)
-    })
+    .action(
+      async (workflowId: string | undefined, options: { open: boolean }, command: Command) => {
+        const context = await projectContext(command)
+        const value = await openWorkbench(context.root, workflowId, options.open)
+        printResult(value, context.json, () => value.url)
+      },
+    )
 
   program
     .command('resume')

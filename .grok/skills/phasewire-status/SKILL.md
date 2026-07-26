@@ -27,6 +27,8 @@ Portable Phasewire adapter for **Grok**.
 - Blocking review findings require remediation plan → user approval → remediation execution → fresh review.
 - Phasewire never deploys. Do not run deploy commands from these adapters.
 - Prefer `phasewire ... --json` and summarize the machine-readable result for the user.
+- Code quality bar is `CODE_QUALITY_AND_ENGINEERING.md`. Review process is `docs/code-review.md`.
+- Never attribute commits, docs, or findings to an AI model.
 
 ## Steps
 

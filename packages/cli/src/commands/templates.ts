@@ -28,7 +28,12 @@ const parseNodeKind = (value: string): VisualNodeKind => {
 const readTemplate = async (projectRoot: string, input: string): Promise<VisualTemplate> => {
   const path = await resolveTemplateInput(projectRoot, input)
   const parsed: unknown = JSON.parse(await readFile(path, 'utf8'))
-  if (typeof parsed !== 'object' || parsed === null || !('id' in parsed) || !('version' in parsed)) {
+  if (
+    typeof parsed !== 'object' ||
+    parsed === null ||
+    !('id' in parsed) ||
+    !('version' in parsed)
+  ) {
     throw new Error(`Invalid template file: ${input}`)
   }
   return parsed as VisualTemplate
@@ -71,7 +76,8 @@ const addCreateCommand = (templates: Command): void => {
           version: options.version,
         })
         const issues = context.core.validateTemplate(template)
-        if (issues.length > 0) throw new Error(`Template scaffold is invalid:\n${issues.join('\n')}`)
+        if (issues.length > 0)
+          throw new Error(`Template scaffold is invalid:\n${issues.join('\n')}`)
         const output =
           options.output ??
           resolve(context.root, '.phasewire', 'template-drafts', `${id}@${options.version}.json`)
@@ -81,7 +87,11 @@ const addCreateCommand = (templates: Command): void => {
           templateJson(template),
           options.force ?? false,
         )
-        printResult({ path, template }, context.json, () => `Created ${id}@${options.version} at ${path}`)
+        printResult(
+          { path, template },
+          context.json,
+          () => `Created ${id}@${options.version} at ${path}`,
+        )
       },
     )
 }

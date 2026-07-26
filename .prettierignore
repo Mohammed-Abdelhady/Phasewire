@@ -1,0 +1,15 @@
+package-lock.json
+node_modules
+dist
+coverage
+.phasewire
+.hyperflow
+playwright-report
+test-results
+*.md
+packages/core/src/replay/reducer.ts
+packages/core/src/core.test.ts
+packages/core/src/remediation.test.ts
+packages/core/src/templates/validation.ts
+packages/core/src/store-base.ts
+apps/web/src/api/projection.ts

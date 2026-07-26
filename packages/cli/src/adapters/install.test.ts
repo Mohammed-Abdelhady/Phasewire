@@ -37,13 +37,11 @@ describe('adapter install', () => {
       true,
     )
     expect(result.files.some((file) => file.endsWith('.claude/commands/phasewire.md'))).toBe(true)
+    expect(result.files.some((file) => file.endsWith('.claude/commands/phasewire/plan.md'))).toBe(
+      true,
+    )
     expect(
-      result.files.some((file) => file.endsWith('.claude/commands/phasewire/plan.md')),
-    ).toBe(true)
-    expect(
-      result.files.some((file) =>
-        file.endsWith('.claude/plugins/phasewire/skills/plan/SKILL.md'),
-      ),
+      result.files.some((file) => file.endsWith('.claude/plugins/phasewire/skills/plan/SKILL.md')),
     ).toBe(true)
 
     const hub = await readFile(join(root, '.claude/skills/phasewire/SKILL.md'), 'utf8')
@@ -67,13 +65,13 @@ describe('adapter install', () => {
       scope: 'project',
     })
 
-    expect(result.files.some((file) => file.includes('.codex/skills/phasewire-plan/SKILL.md'))).toBe(
-      true,
-    )
+    expect(
+      result.files.some((file) => file.includes('.codex/skills/phasewire-plan/SKILL.md')),
+    ).toBe(true)
     expect(result.files.some((file) => file.includes('.grok/skills/phasewire/SKILL.md'))).toBe(true)
-    expect(result.files.some((file) => file.includes('.agent/skills/phasewire-resume/SKILL.md'))).toBe(
-      true,
-    )
+    expect(
+      result.files.some((file) => file.includes('.agent/skills/phasewire-resume/SKILL.md')),
+    ).toBe(true)
     expect(result.files.some((file) => file.includes('.agent/workflows/phasewire-open.md'))).toBe(
       true,
     )

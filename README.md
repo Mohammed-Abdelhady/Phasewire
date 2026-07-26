@@ -60,9 +60,11 @@ phasewire adapters install --host all --scope project
 
 ## Quality gates
 
-`npm run quality` runs structural limits, lint, strict typechecking, unit and integration tests, production builds, dependency auditing, and browser acceptance. Husky installs a fast pre-commit gate and the complete pre-push gate through `npm install`.
+`npm run quality` runs structural limits, lint, format check, strict typechecking, unit and integration tests, production builds, dependency auditing, and browser acceptance. Husky installs a fast pre-commit gate and the complete pre-push gate through `npm install`.
 
 Every authored source, test, configuration, style, schema, and documentation file is limited to 350 physical lines. Generated and vendored files such as `package-lock.json`, `dist/`, and `node_modules/` are excluded. See [Quality gates](docs/quality-gates.md) for the layer contract and failure policy.
+
+**Engineering bar:** [Code quality & engineering](CODE_QUALITY_AND_ENGINEERING.md) · **Review process:** [Code review](docs/code-review.md)
 
 The development web app runs through Vite and proxies project API requests to the loopback service. Production `phasewire open` serves the built workbench from the on-demand local service.
 
@@ -82,4 +84,6 @@ The service binds to loopback, validates host and origin, and requires a per-ses
 - [Report design system](docs/report-design-system.md)
 - [Security and privacy](docs/security.md)
 - [Quality gates](docs/quality-gates.md)
+- [Code quality & engineering](CODE_QUALITY_AND_ENGINEERING.md)
+- [Code review process](docs/code-review.md)
 - [Contributor and harness rules](AGENTS.md)

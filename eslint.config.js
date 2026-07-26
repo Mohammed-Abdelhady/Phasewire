@@ -2,7 +2,17 @@ import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/node_modules/**', '**/coverage/**', '.phasewire/**', 'eslint.config.js'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+      '.phasewire/**',
+      'eslint.config.js',
+      'playwright-report/**',
+      'test-results/**',
+    ],
+  },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   {
@@ -19,16 +29,29 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      'no-console': ['error', { allow: ['warn', 'error'] }],
     },
   },
   {
     files: ['scripts/quality/*.mjs'],
     languageOptions: {
-      globals: { process: 'readonly' },
+      globals: { process: 'readonly', console: 'readonly' },
     },
     rules: {
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      'no-console': 'off',
+    },
+  },
+  {
+    // E2E bootstrap scripts talk to the live server package; keep them typed after quality:static builds deps.
+    files: ['apps/web/e2e/**/*.{ts,tsx}'],
+    rules: {
+      'no-console': 'off',
     },
   },
 )

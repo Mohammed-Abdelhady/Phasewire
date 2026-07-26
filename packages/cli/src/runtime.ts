@@ -73,13 +73,15 @@ export const resultWorkflow = (value: unknown): unknown => {
   return value
 }
 
-export const mutationMessage = (verb: string) => (value: unknown): string => {
-  const workflow = resultWorkflow(value)
-  if (typeof workflow === 'object' && workflow !== null && 'workflowId' in workflow) {
-    return `${verb} ${String(workflow.workflowId)}\n${formatStatus(workflow)}`
+export const mutationMessage =
+  (verb: string) =>
+  (value: unknown): string => {
+    const workflow = resultWorkflow(value)
+    if (typeof workflow === 'object' && workflow !== null && 'workflowId' in workflow) {
+      return `${verb} ${String(workflow.workflowId)}\n${formatStatus(workflow)}`
+    }
+    return verb
   }
-  return verb
-}
 
 export const openWorkbench = async (
   root: string,

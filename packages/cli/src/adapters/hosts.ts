@@ -57,9 +57,7 @@ export const resolveHostPlans = (
 
   if (host === 'codex') {
     const root =
-      scope === 'project'
-        ? join(projectRoot, '.codex', 'skills')
-        : join(home, '.codex', 'skills')
+      scope === 'project' ? join(projectRoot, '.codex', 'skills') : join(home, '.codex', 'skills')
     return [
       {
         host,
@@ -76,9 +74,7 @@ export const resolveHostPlans = (
 
   if (host === 'grok') {
     const root =
-      scope === 'project'
-        ? join(projectRoot, '.grok', 'skills')
-        : join(home, '.grok', 'skills')
+      scope === 'project' ? join(projectRoot, '.grok', 'skills') : join(home, '.grok', 'skills')
     return [
       {
         host,

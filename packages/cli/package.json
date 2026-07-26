@@ -1,0 +1,26 @@
+{
+  "name": "@phasewire/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "phasewire": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty false",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@phasewire/core": "0.1.0",
+    "@phasewire/server": "0.1.0",
+    "commander": "^14.0.2",
+    "open": "^11.0.0"
+  }
+}

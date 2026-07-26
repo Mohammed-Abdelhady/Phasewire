@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "dev": "tsx watch src/index.ts --project-root ../..",
+    "dev": "tsx watch src/index.ts --project-root ../.. --port 4317",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run"
   },

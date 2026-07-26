@@ -64,7 +64,7 @@ phasewire adapters install --host all --scope project
 
 Every authored source, test, configuration, style, schema, and documentation file is limited to 350 physical lines. Generated and vendored files such as `package-lock.json`, `dist/`, and `node_modules/` are excluded. See [Quality gates](docs/quality-gates.md) for the layer contract and failure policy.
 
-The development web app runs through Vite and proxies project API requests to the loopback service. Production `phasewire open` serves the built workbench from the on-demand local service.
+The development web app runs through Vite on `http://127.0.0.1:4318` and proxies `/api` to the local service on `http://127.0.0.1:4317`. `npm run dev` starts both with that fixed service port. Production `phasewire open` still launches an on-demand loopback service on an ephemeral port.
 
 ## Durable and private state
 

@@ -1,0 +1,127 @@
+@media (max-width: 1180px) {
+  .app-header { grid-template-columns: 188px minmax(220px, 1fr) auto; }
+  .workbench { grid-template-columns: 188px minmax(0, 1fr); }
+
+  .evidence-rail {
+    position: static;
+    grid-column: 2;
+    height: auto;
+    overflow: visible;
+    border-block-start: 1px solid var(--border);
+    border-inline-start: 0;
+  }
+
+  .evidence-sections,
+  .phase-properties,
+  .evidence-heading { max-width: 900px; margin-inline: auto; }
+  .evidence-heading { margin-block-end: 24px; }
+}
+
+@media (max-width: 860px) {
+  .app-header { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .brand-lockup strong { display: none; }
+  .workbench { display: block; }
+
+  .phase-spine {
+    position: static;
+    height: auto;
+    padding: 20px;
+    overflow: visible;
+    border-block-end: 1px solid var(--border);
+    border-inline-end: 0;
+  }
+
+  .phase-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .phase-button { grid-template-columns: 1fr; min-height: 94px; }
+  .phase-index { grid-row: auto; }
+  .phase-button .status-badge { grid-column: 1; }
+  .return-trace { display: none; }
+
+  .return-trace-label {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 12px;
+    align-items: center;
+    margin-block-start: 12px;
+  }
+
+  .evidence-rail { padding: 34px clamp(24px, 6vw, 58px) 54px; }
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    position: static;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    padding-block: 12px;
+  }
+
+  .workflow-title { padding-inline: 10px 0; }
+  .workflow-title strong { overflow-wrap: anywhere; text-overflow: clip; white-space: normal; }
+  .header-actions { grid-column: 1 / -1; justify-content: space-between; padding-block-start: 8px; border-block-start: 1px solid var(--border); }
+  .offline-banner,
+  .stale-banner,
+  .action-error-banner { align-items: flex-start; justify-content: flex-start; }
+  .phase-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .phase-button { min-height: 86px; }
+  .report-canvas { padding: 38px 20px 72px; }
+
+  .report-header,
+  .report-section-heading,
+  .gate-summary,
+  .decision-actions,
+  .plan-approval-gate,
+  .gate-action { flex-direction: column; }
+
+  .report-header { margin-block-end: 30px; }
+  .report-header h1 { font-size: clamp(2rem, 12vw, 2.8rem); }
+  .now-why-next { grid-template-columns: 1fr; }
+  .now-why-next > div { min-height: auto; padding: 20px 2px; }
+  .now-why-next > div + div { border-block-start: 1px solid var(--border); border-inline-start: 0; }
+  .summary-index { margin-block-end: 16px; }
+  .report-section { margin-block-start: 48px; }
+  .cycle-history li { grid-template-columns: 34px minmax(0, 1fr); }
+  .cycle-history .status-badge { grid-column: 2; }
+  .decision-card,
+  .deployment-gate { padding: 18px; }
+  .change-map li { grid-template-columns: 1fr; gap: 8px; }
+  .finding-card summary { align-items: flex-start; flex-wrap: wrap; }
+  .finding-card summary .status-badge { margin-inline-start: 0; }
+  .finding-evidence { grid-template-columns: 1fr; }
+  .annotation-form > div { align-items: flex-start; flex-direction: column; }
+  .evidence-rail { padding: 32px 20px 48px; }
+}
+
+@media (max-width: 380px) {
+  .phase-spine { padding-inline: 14px; }
+  .report-canvas,
+  .evidence-rail { padding-inline: 14px; }
+  .refresh-button { padding-inline: 10px; }
+  .connection-status { font-size: 0.68rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .return-trace-path { stroke-dashoffset: 0; }
+}
+
+@media print {
+  .app-header,
+  .phase-spine,
+  .evidence-rail,
+  .offline-banner,
+  .stale-banner,
+  .action-error-banner,
+  .annotation-form,
+  .primary-button,
+  .secondary-button { display: none !important; }
+  .workbench { display: block; }
+  .report-canvas { width: 100%; max-width: none; padding: 0; }
+}

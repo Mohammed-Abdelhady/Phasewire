@@ -1,0 +1,136 @@
+#main-report { min-width: 0; background: var(--surface); }
+
+.report-canvas {
+  width: min(100%, 980px);
+  min-height: calc(100vh - 68px);
+  margin-inline: auto;
+  padding: 54px clamp(28px, 4.5vw, 64px) 96px;
+}
+
+.report-header,
+.report-section-heading,
+.finding-group-heading,
+.gate-summary,
+.decision-actions,
+.gate-action,
+.evidence-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.report-header { margin-block-end: 42px; }
+.report-identity { max-width: 680px; }
+
+.report-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-block-end: 18px;
+  color: var(--text-soft);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  unicode-bidi: isolate;
+}
+
+.report-breadcrumb bdi { unicode-bidi: isolate; }
+
+.report-header h1 {
+  max-width: 760px;
+  color: var(--text);
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-weight: 520;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.report-summary { max-width: 680px; margin-block-start: 18px; color: var(--text-muted); font-size: 1rem; line-height: 1.65; }
+
+.now-why-next {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-block-end: 58px;
+  border-block: 1px solid var(--border);
+}
+
+.now-why-next > div { position: relative; min-height: 178px; padding: 24px 22px 28px; }
+.now-why-next > div + div { border-inline-start: 1px solid var(--border); }
+.summary-index { display: block; margin-block-end: 30px; color: var(--text-soft); font-family: var(--mono); font-size: 0.65rem; }
+.now-why-next h3 { margin-block-end: 8px; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.now-why-next p { color: var(--text-muted); font-size: 0.86rem; line-height: 1.55; }
+
+.report-section { margin-block-start: 64px; animation: report-enter 500ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.report-section-heading { margin-block-end: 20px; }
+
+.report-section-heading h2,
+.gate-summary h2,
+.evidence-heading h2 { margin-block-start: 5px; font-size: 1.38rem; font-weight: 580; letter-spacing: -0.025em; }
+
+.report-section-heading > p { color: var(--text-soft); font-family: var(--mono); font-size: 0.68rem; }
+.cycle-history { border-block-start: 1px solid var(--border); }
+
+.cycle-history li {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding: 18px 2px;
+  border-block-end: 1px solid var(--border);
+}
+
+.cycle-index,
+.flow-index { color: var(--text-soft); font-family: var(--mono); font-size: 0.68rem; }
+.cycle-history strong { font-size: 0.88rem; }
+.cycle-history p { margin-block-start: 4px; color: var(--text-muted); font-size: 0.79rem; line-height: 1.5; }
+.change-map { border-block-start: 1px solid var(--border); }
+
+.change-map li {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.8fr) minmax(240px, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  padding: 17px 2px;
+  border-block-end: 1px solid var(--border);
+}
+
+.change-map code,
+.artifact-list code { overflow-wrap: anywhere; unicode-bidi: isolate; }
+.change-map code { color: var(--text); font-size: 0.7rem; }
+.change-map p { color: var(--text-muted); font-size: 0.78rem; line-height: 1.45; }
+.change-kind { color: var(--neutral-text); font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; }
+.resolution-flow { position: relative; display: grid; border-block-start: 1px solid var(--border); }
+
+.resolution-flow li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 16px;
+  min-height: 108px;
+  padding: 22px 0;
+  border-block-end: 1px solid var(--border);
+}
+
+.resolution-flow li:not(:last-child)::after {
+  position: absolute;
+  inset-block-end: -5px;
+  inset-inline-start: 16px;
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  content: "";
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border-strong);
+  border-block-end: 1px solid var(--border-strong);
+  transform: rotate(45deg);
+}
+
+.resolution-flow h3 { margin-block-end: 7px; font-size: 0.85rem; }
+.resolution-flow p { color: var(--text-muted); font-size: 0.8rem; line-height: 1.55; }
+.selection-rationale { display: block; margin-block-start: 9px; color: var(--active-text); font-size: 0.72rem; line-height: 1.45; }
+
+@keyframes report-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}

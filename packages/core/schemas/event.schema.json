@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://phasewire.dev/schemas/event.schema.json",
+  "title": "Phasewire workflow event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "workflowId",
+    "eventId",
+    "type",
+    "phase",
+    "actor",
+    "occurredAt",
+    "parents",
+    "logicalClock",
+    "idempotencyKey",
+    "payload",
+    "integrity"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "workflowId": { "$ref": "#/$defs/portableId" },
+    "eventId": { "type": "string", "pattern": "^evt_[a-f0-9]{64}$" },
+    "type": {
+      "enum": [
+        "workflow.created",
+        "workflow.reconciled",
+        "plan.proposed",
+        "plan.approved",
+        "phase.claimed",
+        "phase.released",
+        "execution.started",
+        "execution.checkpointed",
+        "execution.completed",
+        "review.started",
+        "review.finding",
+        "review.completed",
+        "remediation.plan-proposed",
+        "remediation.plan-approved",
+        "remediation.started",
+        "remediation.completed",
+        "validation.recorded",
+        "decision.recorded",
+        "handoff.created",
+        "annotation.recorded",
+        "deployment.authorization-recorded"
+      ]
+    },
+    "phase": { "enum": ["plan", "execute", "review", "remediation"] },
+    "actor": { "$ref": "#/$defs/actor" },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "parents": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^evt_[a-f0-9]{64}$" }
+    },
+    "logicalClock": { "type": "integer", "minimum": 0 },
+    "idempotencyKey": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "payload": { "type": "object" },
+    "integrity": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "portableId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["user", "harness", "system"] },
+        "harness": { "type": "string", "minLength": 1 },
+        "displayName": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

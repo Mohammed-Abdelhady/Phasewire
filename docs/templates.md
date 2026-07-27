@@ -42,7 +42,19 @@ Composition merges compatible regions by stable node ID and revalidates the comp
 
 ## Built-in families
 
-The initial catalog covers architecture, dependency maps, workflow state, harness handoffs, comparisons, decision records, execution reports, issue-resolution flows, review findings, validation matrices, timelines, and deployment readiness.
+The catalog covers architecture, dependency maps, workflow state, harness handoffs, comparisons, decision records, execution reports, issue-resolution flows, review findings, validation matrices, timelines, deployment readiness, plus interactive workbench maps:
+
+| Template id | Visual role |
+|---|---|
+| `phasewire.phase-constellation` | Horizontal phase graph with remediation return loops |
+| `phasewire.relation-graph` | Node-edge map for blockers, evidence, and dependencies |
+| `phasewire.event-river` | Chronological durable-event river |
+| `phasewire.actor-handoff` | Harness/human ownership transfer map |
+| `phasewire.cycle-orbit` | Radial multi-cycle remediation map |
+| `phasewire.evidence-web` | Artifact/event/finding evidence web |
+| `phasewire.orientation-strip` | Compact current-vs-viewed phase strip |
+
+Workbench renderers live in `apps/web/src/visuals/` and produce semantic HTML authority plus SVG projection, keyboard focus along edges, text equivalents, and reduced-motion fallbacks.
 
 ## Accessibility requirements
 

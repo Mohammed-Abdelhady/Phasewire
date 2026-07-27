@@ -19,8 +19,11 @@ These rules apply to every harness working in this repository.
 - Keep workflow policy, replay, persistence, and templates in `packages/core`.
 - Keep loopback transport, session security, and hosting in `packages/server`.
 - Keep command composition in `packages/cli`; keep report projection and interaction in `apps/web`.
+- Publishable consumer surface is `packages/phasewire` via `npm run pack:ship`; do not document monorepo scripts as the primary install path.
+- Adapter skill recovery text prefers `npx phasewire`; monorepo `npm run phasewire --` is secondary. Preserve intentional review skill policy in `packages/cli/src/adapters/catalog.ts`.
 - SQLite and rendered reports are disposable projections. Immutable event files are authoritative.
 - Keep harness adapters neutral: inputs and outputs must not depend on one provider transcript.
+- Config is schema v2 (`ui` auto-open prefs, optional `adapters`). Auto-open never weakens approval or authz gates.
 
 ## Code and file limits
 

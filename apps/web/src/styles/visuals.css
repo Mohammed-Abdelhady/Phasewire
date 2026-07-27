@@ -1,0 +1,327 @@
+.workflow-diagrams {
+  display: grid;
+  gap: 28px;
+  margin-block: 36px 8px;
+}
+
+.visual-diagram {
+  margin: 0;
+  padding: 18px 18px 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(251, 251, 250, 0.96)),
+    radial-gradient(circle at top left, rgba(32, 90, 139, 0.06), transparent 42%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(36, 35, 31, 0.04);
+}
+
+.visual-diagram-heading,
+.orientation-map {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.visual-diagram-heading h2,
+.orientation-map strong {
+  font-size: 1.15rem;
+  letter-spacing: -0.03em;
+}
+
+.visual-diagram-hint,
+.visual-diagram-description,
+.orientation-map-copy p:last-child {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.visual-diagram-description { margin-block: 8px 14px; max-width: 62ch; }
+
+.visual-diagram-frame {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, rgba(228, 226, 221, 0.35) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(rgba(228, 226, 221, 0.35) 1px, transparent 1px) 0 0 / 24px 24px,
+    #fcfcfb;
+}
+
+.visual-graph-svg,
+.orientation-map-svg {
+  display: block;
+  width: 100%;
+  min-height: 180px;
+}
+
+.visual-graph-svg:focus,
+.orientation-map-svg:focus {
+  outline: none;
+}
+
+.visual-graph-svg:focus-visible,
+.orientation-map-svg:focus-visible {
+  outline: 2px solid var(--active-text);
+  outline-offset: 2px;
+}
+
+.visual-edge path {
+  fill: none;
+  stroke: #8d8a83;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+
+.visual-edge.is-blocks path { stroke: var(--blocking-text); stroke-dasharray: 5 4; }
+.visual-edge.is-return path { stroke: var(--active-text); stroke-width: 1.8; }
+.visual-edge.is-evidence-for path { stroke: var(--verified-text); stroke-dasharray: 2 4; }
+.visual-edge.is-handoff path { stroke: var(--risk-text); }
+.visual-edge.is-dimmed { opacity: 0.22; }
+.visual-edge text {
+  fill: var(--text-soft);
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+.visual-edge.is-animated path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: edge-flow 1.6s linear infinite;
+}
+
+.visual-edge-marker { fill: #8d8a83; }
+
+.visual-node { cursor: pointer; }
+.visual-node-surface {
+  fill: rgba(255, 255, 255, 0.96);
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  transition: transform 160ms ease, fill 160ms ease, stroke 160ms ease;
+}
+
+.visual-node.is-focused .visual-node-surface,
+.visual-node.is-linked .visual-node-surface {
+  fill: #fff;
+  stroke: var(--active-text);
+}
+
+.visual-node-focus-ring {
+  fill: none;
+  stroke: var(--active-text);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+.visual-node-label {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.visual-node-meta {
+  fill: var(--text-soft);
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+.visual-status-shape { stroke-width: 1.4; }
+.visual-status-shape.is-active { fill: var(--active-text); stroke: var(--active-text); }
+.visual-status-shape.is-blocked { fill: var(--blocking-bg); stroke: var(--blocking-text); }
+.visual-status-shape.is-risk { fill: var(--risk-bg); stroke: var(--risk-text); }
+.visual-status-shape.is-complete,
+.visual-status-shape.is-verified,
+.visual-status-shape.is-ready {
+  fill: var(--verified-bg);
+  stroke: var(--verified-text);
+}
+.visual-status-shape.is-complete path,
+.visual-status-shape.is-verified path,
+.visual-status-shape.is-ready path {
+  fill: none;
+  stroke: var(--verified-text);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.visual-status-shape.is-queued {
+  fill: var(--neutral-bg);
+  stroke: var(--neutral-text);
+}
+
+.visual-diagram-caption { margin-block-start: 12px; }
+
+.visual-text-equivalent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.visual-text-equivalent button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  text-align: start;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.visual-text-equivalent button.is-active {
+  border-color: var(--active-text);
+  background: var(--active-bg);
+}
+
+.visual-text-index {
+  color: var(--text-soft);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+}
+
+.visual-text-equivalent strong { font-size: 0.8rem; }
+.visual-text-equivalent span,
+.visual-text-equivalent small {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.relation-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
+.relation-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.relation-legend-swatch {
+  width: 28px;
+  height: 2px;
+  background: #8d8a83;
+  border-radius: 999px;
+}
+
+.relation-legend-item.is-blocks .relation-legend-swatch {
+  background: repeating-linear-gradient(90deg, var(--blocking-text) 0 5px, transparent 5px 9px);
+}
+.relation-legend-item.is-return .relation-legend-swatch { background: var(--active-text); height: 3px; }
+.relation-legend-item.is-evidence-for .relation-legend-swatch {
+  background: repeating-linear-gradient(90deg, var(--verified-text) 0 2px, transparent 2px 6px);
+}
+.relation-legend-item.is-handoff .relation-legend-swatch { background: var(--risk-text); }
+
+.orientation-map {
+  margin-block-end: 28px;
+  padding: 14px 16px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.orientation-map-copy { max-width: 42ch; }
+.orientation-map-visual {
+  display: grid;
+  gap: 12px;
+  min-width: min(100%, 320px);
+}
+.orientation-map-svg {
+  width: min(100%, 320px);
+  min-height: 72px;
+  pointer-events: none;
+}
+.orientation-map-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 8px;
+}
+.orientation-phase-button {
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 10px;
+  text-align: start;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.orientation-phase-button.is-selected,
+.orientation-phase-button.is-current {
+  border-color: var(--active-text);
+  background: var(--active-bg);
+}
+.orientation-phase-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.orientation-phase-meta {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+}
+.orientation-spine {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+}
+.orientation-return {
+  fill: none;
+  stroke: var(--active-text);
+  stroke-width: 1.5;
+}
+.orientation-return.is-animated {
+  stroke-dasharray: 1;
+  animation: edge-flow 1.8s linear infinite;
+}
+.orientation-hit { fill: transparent; }
+.orientation-ring {
+  fill: none;
+  stroke: var(--active-text);
+  stroke-width: 1.4;
+  stroke-dasharray: 2 2;
+}
+
+@keyframes edge-flow {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual-edge.is-animated path,
+  .orientation-return.is-animated {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
+[dir="rtl"] .visual-graph-svg,
+[dir="rtl"] .orientation-map-svg {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .visual-node-label,
+[dir="rtl"] .visual-node-meta,
+[dir="rtl"] .visual-edge text {
+  transform: scaleX(-1);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (max-width: 760px) {
+  .visual-diagram-heading,
+  .orientation-map {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

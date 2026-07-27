@@ -1,4 +1,5 @@
 import type { PhaseId, WorkflowProjection } from '../types'
+import { OrientationMap, WorkflowDiagrams } from '../visuals'
 import { Annotations } from './Annotations'
 import { DecisionPanel } from './DecisionPanel'
 import { DeploymentGate } from './DeploymentGate'
@@ -15,6 +16,7 @@ interface ReportCanvasProps {
   onApprovePlan: () => Promise<void>
   onAnnotation: (body: string) => Promise<void>
   onAuthorize: () => Promise<void>
+  onSelectPhase: (phase: PhaseId) => void
 }
 
 export function ReportCanvas({
@@ -26,6 +28,7 @@ export function ReportCanvas({
   onApprovePlan,
   onAnnotation,
   onAuthorize,
+  onSelectPhase,
 }: ReportCanvasProps) {
   const phase = workflow.phases.find((item) => item.id === selectedPhase) ?? workflow.phases[0]
   const narrative = workflow.narratives[selectedPhase]
@@ -53,6 +56,12 @@ export function ReportCanvas({
         <StatusBadge status={phase.status} />
       </header>
 
+      <OrientationMap
+        workflow={workflow}
+        selectedPhase={selectedPhase}
+        onSelect={onSelectPhase}
+      />
+
       <section className="now-why-next" aria-labelledby="phase-summary-title">
         <h2 id="phase-summary-title" className="sr-only">
           Phase summary
@@ -79,6 +88,12 @@ export function ReportCanvas({
           <p>{narrative.next}</p>
         </div>
       </section>
+
+      <WorkflowDiagrams
+        workflow={workflow}
+        selectedPhase={selectedPhase}
+        onSelectPhase={onSelectPhase}
+      />
 
       <section className="report-section" aria-labelledby="cycle-history-title">
         <div className="report-section-heading">

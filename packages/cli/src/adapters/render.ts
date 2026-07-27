@@ -61,7 +61,7 @@ export const renderSkillMarkdown = (skill: AdapterSkill, host: AdapterHost): str
     '',
     '## Recovery',
     '',
-    'If the project is missing, run `phasewire init` first. If the CLI is missing, build the workspace with `npm run build` and use `npx phasewire` or `npm run phasewire --`.',
+    'If the project is missing, run `npx phasewire init` first. Prefer `npx phasewire …` (or a global `phasewire` install) for all commands. In this monorepo only, fall back to `npm run build` then `npm run phasewire -- …` or `./node_modules/.bin/phasewire …`.',
     '',
   ]
   return `${lines.join('\n')}\n`

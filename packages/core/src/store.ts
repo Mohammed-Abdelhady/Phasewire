@@ -13,7 +13,9 @@ import type {
   ReconcileOptions, ReleaseClaimOptions, WorkflowEvent, WorkflowPhase,
 } from './types.js'
 
-export { MAX_CLAIM_TTL_MS, PHASEWIRE_DIRS, PHASEWIRE_SCHEMA_VERSION } from './store-helpers.js'
+export {
+  CONFIG_SCHEMA_VERSION, MAX_CLAIM_TTL_MS, PHASEWIRE_DIRS, PHASEWIRE_SCHEMA_VERSION,
+} from './store-helpers.js'
 
 export class WorkflowStore extends WorkflowStoreBase {
   public async claimPhase(

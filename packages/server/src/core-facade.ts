@@ -9,10 +9,12 @@ import {
   type JsonObject,
   type HandoffPacket,
   type InitOptions,
+  type PhasewireConfig,
   type ReconciliationResolution,
   type ScaffoldVisualTemplateOptions,
   type VisualTemplate,
   type WorkflowProjection,
+  type WriteConfigInput,
 } from '@phasewire/core'
 
 import type { CoreGateway, WorkflowMutationResult } from './core-gateway.js'
@@ -74,6 +76,14 @@ export class PhasewireCoreFacade implements CoreGateway {
 
   async initialize(options: InitOptions = {}): Promise<unknown> {
     return this.#store.init(options)
+  }
+
+  async writeConfig(partial: WriteConfigInput): Promise<PhasewireConfig> {
+    return this.#store.writeConfig(partial)
+  }
+
+  async readConfig(): Promise<PhasewireConfig> {
+    return this.#store.readConfig()
   }
 
   async createWorkflow(options: CreateWorkflowOptions): Promise<WorkflowMutationResult> {

@@ -1,12 +1,21 @@
-import type { WorkflowPhase } from '@phasewire/core'
+import type { PhasewireConfig, WorkflowPhase } from '@phasewire/core'
 import { InvalidArgumentError, type Command } from 'commander'
-import openBrowser from 'open'
 
 import { PhasewireCoreFacade } from '@phasewire/server/core-facade'
-import { ensureService } from '@phasewire/server/launcher'
 
 import { formatStatus } from './output.js'
 import { discoverProjectRoot } from './project-root.js'
+import {
+  maybeOpenWorkbench,
+  openWorkbench,
+  shouldOpenWorkbench,
+  type OpenPolicyInput,
+  type WorkbenchLaunch,
+  type WorkbenchOpenKind,
+} from './ui-open.js'
+
+export type { OpenPolicyInput, WorkbenchLaunch, WorkbenchOpenKind }
+export { maybeOpenWorkbench, openWorkbench, shouldOpenWorkbench }
 
 export interface GlobalOptions {
   readonly json?: boolean
@@ -14,17 +23,20 @@ export interface GlobalOptions {
 }
 
 export interface HarnessOptions {
-  readonly harness: string
+  readonly harness?: string
 }
 
-export interface PlanOptions extends HarnessOptions {
-  readonly id?: string
+export interface OpenFlagOptions {
   readonly open: boolean
+}
+
+export interface PlanOptions extends HarnessOptions, OpenFlagOptions {
+  readonly id?: string
   readonly template?: string
   readonly validation: readonly string[]
 }
 
-export interface ClaimOptions extends HarnessOptions {
+export interface ClaimOptions extends HarnessOptions, OpenFlagOptions {
   readonly phase: WorkflowPhase
   readonly ttl?: number
 }
@@ -33,10 +45,14 @@ export interface ReleaseOptions extends HarnessOptions {
   readonly phase: WorkflowPhase
 }
 
-export interface ProjectContext {
+export interface ProjectCoreContext {
   readonly core: PhasewireCoreFacade
   readonly json: boolean
   readonly root: string
+}
+
+export interface ProjectContext extends ProjectCoreContext {
+  readonly config: PhasewireConfig
 }
 
 export const collect = (value: string, previous: readonly string[]): readonly string[] => [
@@ -62,15 +78,50 @@ export const parsePhase = (value: string): WorkflowPhase => {
 export const globalOptions = (command: Command): GlobalOptions =>
   command.optsWithGlobals<GlobalOptions>()
 
-export const projectContext = async (command: Command): Promise<ProjectContext> => {
+export const projectCoreContext = async (command: Command): Promise<ProjectCoreContext> => {
   const options = globalOptions(command)
   const root = await discoverProjectRoot(process.cwd(), options.projectRoot)
-  return { core: new PhasewireCoreFacade(root), json: options.json ?? false, root }
+  return {
+    core: new PhasewireCoreFacade(root),
+    json: options.json ?? false,
+    root,
+  }
+}
+
+export const projectContext = async (command: Command): Promise<ProjectContext> => {
+  const base = await projectCoreContext(command)
+  return {
+    ...base,
+    config: await base.core.readConfig(),
+  }
+}
+
+/** Resolve harness: --harness > PHASEWIRE_HARNESS > config.defaultHarness > user */
+export const resolveHarness = (
+  flag: string | undefined,
+  env: Readonly<Record<string, string | undefined>>,
+  config: Readonly<{ defaultHarness?: string }>,
+): string => {
+  const fromFlag = flag?.trim()
+  if (fromFlag !== undefined && fromFlag.length > 0) return fromFlag
+  const fromEnv = env.PHASEWIRE_HARNESS?.trim()
+  if (fromEnv !== undefined && fromEnv.length > 0) return fromEnv
+  const fromConfig = config.defaultHarness?.trim()
+  if (fromConfig !== undefined && fromConfig.length > 0) return fromConfig
+  return 'user'
 }
 
 export const resultWorkflow = (value: unknown): unknown => {
   if (typeof value === 'object' && value !== null && 'workflow' in value) return value.workflow
   return value
+}
+
+export const extractWorkflowId = (value: unknown, fallback?: string): string | undefined => {
+  const workflow = resultWorkflow(value)
+  if (typeof workflow === 'object' && workflow !== null && 'workflowId' in workflow) {
+    return String(workflow.workflowId)
+  }
+  return fallback
 }
 
 export const mutationMessage =
@@ -83,19 +134,24 @@ export const mutationMessage =
     return verb
   }
 
-export const openWorkbench = async (
-  root: string,
-  workflowId: string | undefined,
-  shouldOpen: boolean,
-): Promise<Readonly<{ opened: boolean; url: string }>> => {
-  const endpoint = await ensureService(root)
-  const query = new URLSearchParams({
-    token: endpoint.token,
-    ...(workflowId === undefined ? {} : { workflow: workflowId }),
-  })
-  const launchUrl = `${endpoint.origin}/session?${query.toString()}`
-  if (!shouldOpen) return { opened: false, url: launchUrl }
-  await openBrowser(launchUrl)
-  const fragment = workflowId === undefined ? '' : `#workflow=${encodeURIComponent(workflowId)}`
-  return { opened: true, url: `${endpoint.origin}/${fragment}` }
+export const withOptionalWorkbench = async (
+  context: ProjectContext,
+  value: unknown,
+  options: {
+    readonly kind: WorkbenchOpenKind
+    readonly openFlag?: boolean
+    readonly workflowId?: string
+  },
+): Promise<unknown> => {
+  const workflowId = extractWorkflowId(value, options.workflowId)
+  const policy: OpenPolicyInput = {
+    config: context.config,
+    json: context.json,
+    kind: options.kind,
+    ...(options.openFlag === undefined ? {} : { openFlag: options.openFlag }),
+  }
+  const ui = await maybeOpenWorkbench(context.root, workflowId, policy)
+  if (ui === undefined) return value
+  if (typeof value === 'object' && value !== null) return { ...value, ui }
+  return { result: value, ui }
 }

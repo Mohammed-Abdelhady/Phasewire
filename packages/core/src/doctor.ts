@@ -1,6 +1,7 @@
 import { readdir } from 'node:fs/promises'
 import { join, relative, resolve, sep } from 'node:path'
 
+import { isConfigSchemaV2 } from './config.js'
 import { pathExists, readJson, readTextFile } from './files.js'
 import { assertHandoffPacket } from './handoffs.js'
 import { assertSecurePath, assertSecurePhasewireRoot } from './paths.js'
@@ -15,10 +16,6 @@ function issue(
   options: { readonly path?: string; readonly workflowId?: string; readonly remediation?: string } = {},
 ): DoctorIssue {
   return { code, severity, message, ...options }
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 function redactIssue(entry: DoctorIssue, projectRoot: string): DoctorIssue {
@@ -78,15 +75,8 @@ export async function doctorProject(projectRoot: string): Promise<DoctorReport> 
   if (await pathExists(configPath)) {
     try {
       const config = await readJson(configPath, absoluteRoot)
-      if (
-        !isObject(config) ||
-        config.schemaVersion !== 1 ||
-        typeof config.projectId !== 'string' ||
-        typeof config.defaultTemplateId !== 'string' ||
-        !Array.isArray(config.requiredValidations) ||
-        !config.requiredValidations.every((entry) => typeof entry === 'string')
-      ) {
-        issues.push(issue('INVALID_CONFIG', 'error', 'Phasewire config does not match schema version 1', { path: configPath }))
+      if (!isConfigSchemaV2(config)) {
+        issues.push(issue('INVALID_CONFIG', 'error', 'Phasewire config does not match schema version 2', { path: configPath }))
       }
     } catch (error) {
       issues.push(issue('INVALID_CONFIG_JSON', 'error', error instanceof Error ? error.message : 'Config cannot be read', {

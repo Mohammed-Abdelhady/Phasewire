@@ -1,0 +1,37 @@
+{
+  "name": "phasewire",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Persistent visual control layer for harness-agnostic development workflows",
+  "type": "module",
+  "bin": {
+    "phasewire": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "schemas",
+    "web",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@fastify/static": "^10.1.2",
+    "better-sqlite3": "^12.6.2",
+    "commander": "^14.0.2",
+    "fastify": "^5.6.2",
+    "open": "^11.0.0"
+  },
+  "keywords": [
+    "workflow",
+    "cli",
+    "local-first",
+    "development",
+    "phasewire"
+  ],
+  "license": "MIT"
+}

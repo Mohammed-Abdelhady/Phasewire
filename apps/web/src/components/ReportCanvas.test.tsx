@@ -29,6 +29,7 @@ describe('Phasewire workbench reports', () => {
         onApprovePlan={resolveAction}
         onAnnotation={resolveAction}
         onAuthorize={resolveAction}
+        onSelectPhase={() => undefined}
       />,
     )
 
@@ -46,6 +47,12 @@ describe('Phasewire workbench reports', () => {
     expect(reportMarkup).toContain('data-testid="approve-plan"')
     expect(reportMarkup).toContain('<bdi dir="ltr"')
     expect(reportMarkup).toContain('Resolve every material decision before approving this plan.')
+    expect(reportMarkup).toContain('data-testid="orientation-map"')
+    expect(reportMarkup).toContain('data-testid="orientation-phase-plan"')
+    expect(reportMarkup).toContain('role="radiogroup"')
+    expect(reportMarkup).toContain('data-testid="phase-constellation"')
+    expect(reportMarkup).toContain('role="application"')
+    expect(reportMarkup).toContain('Phase constellation')
   })
 
   it('distinguishes blocking review evidence from improvements', () => {
@@ -59,6 +66,7 @@ describe('Phasewire workbench reports', () => {
         onApprovePlan={resolveAction}
         onAnnotation={resolveAction}
         onAuthorize={resolveAction}
+        onSelectPhase={() => undefined}
       />,
     )
 
@@ -66,6 +74,8 @@ describe('Phasewire workbench reports', () => {
     expect(markup).toContain('Non-blocking issues')
     expect(markup).toContain('Improvements')
     expect(markup).toContain('Requires another Plan → Execute → Review cycle.')
+    expect(markup).toContain('data-testid="finding-graph"')
+    expect(markup).toContain('Finding relationships')
   })
 
   it('keeps deployment authorization separate and unavailable before readiness', () => {
@@ -79,6 +89,7 @@ describe('Phasewire workbench reports', () => {
         onApprovePlan={resolveAction}
         onAnnotation={resolveAction}
         onAuthorize={resolveAction}
+        onSelectPhase={() => undefined}
       />,
     )
 
@@ -86,5 +97,6 @@ describe('Phasewire workbench reports', () => {
     expect(markup).toContain('Phasewire never runs a deployment from this gate.')
     expect(markup).toContain('data-testid="authorize-deployment"')
     expect(markup).toContain('disabled=""')
+    expect(markup).toContain('data-testid="readiness-chain"')
   })
 })

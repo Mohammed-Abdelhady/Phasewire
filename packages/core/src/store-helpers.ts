@@ -1,14 +1,21 @@
 import { canonicalJson } from './canonical.js'
 import { PhasewireError } from './errors.js'
-import type { EventInput, JsonObject, JsonValue, PhasewireConfig, WorkflowEvent } from './types.js'
+import type {
+  EventInput, JsonObject, JsonValue, PhasewireConfig, PhasewireUiConfig, WorkflowEvent,
+} from './types.js'
 
 export const PHASEWIRE_SCHEMA_VERSION = 1 as const
+export const CONFIG_SCHEMA_VERSION = 2 as const
 export const PHASEWIRE_DIRS = Object.freeze({
   root: '.phasewire', workflows: 'workflows', artifacts: 'artifacts', plans: 'artifacts/plans',
   decisions: 'artifacts/decisions', executions: 'artifacts/executions', reviews: 'artifacts/reviews',
   validations: 'artifacts/validations', handoffs: 'handoffs', templates: 'templates', runtime: '.runtime',
 })
 export const DEFAULT_VALIDATIONS = ['lint', 'typecheck', 'build', 'test'] as const
+export const DEFAULT_UI_PREFS: PhasewireUiConfig = Object.freeze({
+  autoOpenOnMutate: true,
+  autoOpenOnStatusWithId: false,
+})
 export const MAX_CLAIM_TTL_MS = 60 * 60 * 1000
 
 export function assertSafeIdentifier(value: string, label: string): void {
@@ -65,7 +72,27 @@ export function eventAsJson(event: WorkflowEvent): JsonObject {
 
 export function configAsJson(config: PhasewireConfig): JsonObject {
   return {
-    schemaVersion: config.schemaVersion, projectId: config.projectId,
-    defaultTemplateId: config.defaultTemplateId, requiredValidations: [...config.requiredValidations],
+    schemaVersion: config.schemaVersion,
+    projectId: config.projectId,
+    defaultTemplateId: config.defaultTemplateId,
+    requiredValidations: [...config.requiredValidations],
+    ...(config.defaultHarness === undefined ? {} : { defaultHarness: config.defaultHarness }),
+    ...(config.adapters === undefined
+      ? {}
+      : {
+          adapters: {
+            hosts: [...config.adapters.hosts],
+            scope: config.adapters.scope,
+            ...(config.adapters.installedAt === undefined ? {} : { installedAt: config.adapters.installedAt }),
+          },
+        }),
+    ...(config.ui === undefined
+      ? {}
+      : {
+          ui: {
+            autoOpenOnMutate: config.ui.autoOpenOnMutate,
+            autoOpenOnStatusWithId: config.ui.autoOpenOnStatusWithId,
+          },
+        }),
   }
 }

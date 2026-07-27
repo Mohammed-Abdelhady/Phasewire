@@ -11,6 +11,8 @@ export default tseslint.config(
       'eslint.config.js',
       'playwright-report/**',
       'test-results/**',
+      'packages/phasewire/web/**',
+      'packages/phasewire/dist/**',
     ],
   },
   eslint.configs.recommended,
@@ -19,7 +21,12 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.config.js', '*.config.ts', 'scripts/quality/*.mjs'],
+          allowDefaultProject: [
+            '*.config.js',
+            '*.config.ts',
+            'scripts/quality/*.mjs',
+            'scripts/pack-ship.mjs',
+          ],
         },
         tsconfigRootDir: import.meta.dirname,
       },
@@ -37,12 +44,15 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/quality/*.mjs'],
+    files: ['scripts/quality/*.mjs', 'scripts/pack-ship.mjs'],
     languageOptions: {
       globals: { process: 'readonly', console: 'readonly' },
     },
     rules: {
       '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       'no-console': 'off',
     },

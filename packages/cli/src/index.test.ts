@@ -8,6 +8,8 @@ describe('CLI namespace', () => {
     expect(program.name()).toBe('phasewire')
     expect(program.commands.map((command) => command.name())).toEqual([
       'init',
+      'setup',
+      'config',
       'plan',
       'approve-plan',
       'execute',
@@ -39,6 +41,8 @@ describe('CLI namespace', () => {
     expect(program.commands.some((command) => command.name() === 'deploy')).toBe(false)
     const adapters = program.commands.find((command) => command.name() === 'adapters')
     expect(adapters?.commands.map((command) => command.name())).toEqual(['install'])
+    const config = program.commands.find((command) => command.name() === 'config')
+    expect(config?.commands.map((command) => command.name())).toEqual(['show', 'set'])
   })
 
   it('exposes the exact nested handoff and template commands', () => {
@@ -75,6 +79,38 @@ describe('CLI namespace', () => {
     expect(helpFor('plan-remediation')).toContain('--harness <harness>')
     expect(helpFor('start-remediation')).toContain('--harness <harness>')
     expect(helpFor('complete-remediation')).toContain('--resolved <finding-id>')
+  })
+
+  it('exposes --no-open on mutators that may open the workbench', () => {
+    const program = createProgram()
+    const helpFor = (name: string): string => {
+      const command = program.commands.find((candidate) => candidate.name() === name)
+      if (command === undefined) throw new Error(`Missing ${name} command`)
+      return command.helpInformation()
+    }
+    for (const name of [
+      'plan',
+      'execute',
+      'review',
+      'resume',
+      'claim',
+      'complete-execution',
+      'complete-review',
+      'plan-remediation',
+      'start-remediation',
+      'complete-remediation',
+      'approve-plan',
+      'approve-remediation',
+      'authorize-deployment',
+    ]) {
+      expect(helpFor(name)).toContain('--no-open')
+    }
+    const handoff = program.commands.find((command) => command.name() === 'handoff')
+    const create = handoff?.commands.find((command) => command.name() === 'create')
+    expect(create?.helpInformation()).toContain('--no-open')
+    expect(helpFor('checkpoint')).not.toContain('--no-open')
+    expect(helpFor('finding')).not.toContain('--no-open')
+    expect(helpFor('validate')).not.toContain('--no-open')
   })
 
   it('requires at least one resolved finding when completing remediation', () => {

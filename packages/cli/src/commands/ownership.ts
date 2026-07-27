@@ -6,7 +6,9 @@ import {
   parsePhase,
   parsePositiveInteger,
   projectContext,
+  withOptionalWorkbench,
   type ClaimOptions,
+  type OpenFlagOptions,
   type ReleaseOptions,
 } from '../runtime.js'
 
@@ -18,10 +20,11 @@ export const addHandoffCommands = (program: Command): void => {
     .requiredOption('--to <harness>', 'Intended receiving harness')
     .option('--from <actor>', 'Creating actor', 'user')
     .option('--note <text>', 'Handoff note')
+    .option('--no-open', 'Skip opening the visual workbench')
     .action(
       async (
         workflowId: string,
-        options: { from: string; note?: string; to: string },
+        options: OpenFlagOptions & { from: string; note?: string; to: string },
         command: Command,
       ) => {
         const context = await projectContext(command)
@@ -31,7 +34,12 @@ export const addHandoffCommands = (program: Command): void => {
           ...(options.note === undefined ? {} : { note: options.note }),
           workflowId,
         })
-        printResult(value, context.json, () => `Created handoff for ${workflowId} to ${options.to}`)
+        const output = await withOptionalWorkbench(context, value, {
+          kind: 'mutate',
+          openFlag: options.open,
+          workflowId,
+        })
+        printResult(output, context.json, () => `Created handoff for ${workflowId} to ${options.to}`)
       },
     )
 }
@@ -43,16 +51,22 @@ export const addPhaseOwnershipCommands = (program: Command): void => {
     .requiredOption('--phase <phase>', 'Phase to claim', parsePhase)
     .requiredOption('--harness <harness>', 'Claiming harness')
     .option('--ttl <milliseconds>', 'Lease duration in milliseconds', parsePositiveInteger)
+    .option('--no-open', 'Skip opening the visual workbench')
     .action(async (workflowId: string, options: ClaimOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'claim', {
-        actor: options.harness,
+        actor: options.harness ?? 'user',
         payload: {
           phase: options.phase,
           ...(options.ttl === undefined ? {} : { ttlMs: options.ttl }),
         },
       })
-      printResult(value, context.json, mutationMessage('Claimed'))
+      const output = await withOptionalWorkbench(context, value, {
+        kind: 'mutate',
+        openFlag: options.open,
+        workflowId,
+      })
+      printResult(output, context.json, mutationMessage('Claimed'))
     })
 
   program
@@ -87,7 +101,7 @@ export const addPhaseOwnershipCommands = (program: Command): void => {
     .action(async (workflowId: string, options: ReleaseOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'release', {
-        actor: options.harness,
+        actor: options.harness ?? 'user',
         payload: { phase: options.phase },
       })
       printResult(value, context.json, mutationMessage('Released'))

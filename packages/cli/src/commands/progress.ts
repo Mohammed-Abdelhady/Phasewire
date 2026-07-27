@@ -1,12 +1,18 @@
 import { InvalidArgumentError, type Command } from 'commander'
 
 import { printResult } from '../output.js'
-import { mutationMessage, projectContext, type HarnessOptions } from '../runtime.js'
+import {
+  mutationMessage,
+  projectContext,
+  withOptionalWorkbench,
+  type HarnessOptions,
+  type OpenFlagOptions,
+} from '../runtime.js'
 
 type FindingSeverity = 'blocking' | 'warning' | 'info'
 type ValidationStatus = 'passed' | 'failed' | 'skipped'
 
-interface ArtifactOptions extends HarnessOptions {
+interface ArtifactOptions extends HarnessOptions, OpenFlagOptions {
   readonly artifact?: string
 }
 
@@ -55,16 +61,22 @@ const addExecutionCompletion = (program: Command): void => {
     .requiredOption('--harness <harness>', 'Completing harness')
     .option('--artifact <path>', 'Project-relative execution artifact path')
     .option('--summary <text>', 'Execution completion summary')
+    .option('--no-open', 'Skip opening the visual workbench')
     .action(async (workflowId: string, options: CompleteExecutionOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'complete-execution', {
-        actor: options.harness,
+        actor: options.harness ?? 'user',
         payload: {
           ...(options.artifact === undefined ? {} : { artifactPath: options.artifact }),
           ...(options.summary === undefined ? {} : { summary: options.summary }),
         },
       })
-      printResult(value, context.json, mutationMessage('Execution completed for'))
+      const output = await withOptionalWorkbench(context, value, {
+        kind: 'mutate',
+        openFlag: options.open,
+        workflowId,
+      })
+      printResult(output, context.json, mutationMessage('Execution completed for'))
     })
 }
 
@@ -82,7 +94,7 @@ const addFinding = (program: Command): void => {
     .action(async (workflowId: string, options: FindingOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'finding', {
-        actor: options.harness,
+        actor: options.harness ?? 'user',
         payload: {
           severity: options.severity,
           title: options.title,
@@ -108,7 +120,7 @@ const addValidation = (program: Command): void => {
     .action(async (workflowId: string, options: ValidationOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'validation', {
-        actor: options.harness,
+        actor: options.harness ?? 'user',
         payload: {
           check: options.check,
           status: options.status,
@@ -126,15 +138,21 @@ const addReviewCompletion = (program: Command): void => {
     .argument('<workflow-id>')
     .requiredOption('--harness <harness>', 'Reviewing harness')
     .option('--artifact <path>', 'Project-relative review artifact path')
+    .option('--no-open', 'Skip opening the visual workbench')
     .action(async (workflowId: string, options: ArtifactOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'complete-review', {
-        actor: options.harness,
+        actor: options.harness ?? 'user',
         payload: {
           ...(options.artifact === undefined ? {} : { artifactPath: options.artifact }),
         },
       })
-      printResult(value, context.json, mutationMessage('Review completed for'))
+      const output = await withOptionalWorkbench(context, value, {
+        kind: 'mutate',
+        openFlag: options.open,
+        workflowId,
+      })
+      printResult(output, context.json, mutationMessage('Review completed for'))
     })
 }
 
@@ -144,27 +162,39 @@ const addRemediation = (program: Command): void => {
     .argument('<workflow-id>')
     .requiredOption('--harness <harness>', 'Planning harness')
     .option('--artifact <path>', 'Project-relative remediation plan artifact path')
+    .option('--no-open', 'Skip opening the visual workbench')
     .action(async (workflowId: string, options: ArtifactOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'plan-remediation', {
-        actor: options.harness,
+        actor: options.harness ?? 'user',
         payload: {
           ...(options.artifact === undefined ? {} : { artifactPath: options.artifact }),
         },
       })
-      printResult(value, context.json, mutationMessage('Remediation planned for'))
+      const output = await withOptionalWorkbench(context, value, {
+        kind: 'mutate',
+        openFlag: options.open,
+        workflowId,
+      })
+      printResult(output, context.json, mutationMessage('Remediation planned for'))
     })
 
   program
     .command('approve-remediation')
     .argument('<workflow-id>')
-    .action(async (workflowId: string, _options: object, command: Command) => {
+    .option('--no-open', 'Skip opening the visual workbench')
+    .action(async (workflowId: string, options: OpenFlagOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'approve-remediation', {
         actor: 'user',
         payload: { acknowledgedMaterialDecisions: true },
       })
-      printResult(value, context.json, mutationMessage('Remediation plan approved for'))
+      const output = await withOptionalWorkbench(context, value, {
+        kind: 'mutate',
+        openFlag: options.open,
+        workflowId,
+      })
+      printResult(output, context.json, mutationMessage('Remediation plan approved for'))
     })
 
   program
@@ -172,15 +202,21 @@ const addRemediation = (program: Command): void => {
     .argument('<workflow-id>')
     .requiredOption('--harness <harness>', 'Remediating harness')
     .option('--artifact <path>', 'Project-relative remediation artifact path')
+    .option('--no-open', 'Skip opening the visual workbench')
     .action(async (workflowId: string, options: ArtifactOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'start-remediation', {
-        actor: options.harness,
+        actor: options.harness ?? 'user',
         payload: {
           ...(options.artifact === undefined ? {} : { artifactPath: options.artifact }),
         },
       })
-      printResult(value, context.json, mutationMessage('Remediation started for'))
+      const output = await withOptionalWorkbench(context, value, {
+        kind: 'mutate',
+        openFlag: options.open,
+        workflowId,
+      })
+      printResult(output, context.json, mutationMessage('Remediation started for'))
     })
 
   program
@@ -193,16 +229,22 @@ const addRemediation = (program: Command): void => {
       collectResolved,
     )
     .option('--artifact <path>', 'Project-relative remediation artifact path')
+    .option('--no-open', 'Skip opening the visual workbench')
     .action(async (workflowId: string, options: CompleteRemediationOptions, command: Command) => {
       const context = await projectContext(command)
       const value = await context.core.performAction(workflowId, 'complete-remediation', {
-        actor: options.harness,
+        actor: options.harness ?? 'user',
         payload: {
           resolvedFindingIds: [...options.resolved],
           ...(options.artifact === undefined ? {} : { artifactPath: options.artifact }),
         },
       })
-      printResult(value, context.json, mutationMessage('Remediation completed for'))
+      const output = await withOptionalWorkbench(context, value, {
+        kind: 'mutate',
+        openFlag: options.open,
+        workflowId,
+      })
+      printResult(output, context.json, mutationMessage('Remediation completed for'))
     })
 }
 

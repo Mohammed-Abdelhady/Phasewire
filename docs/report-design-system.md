@@ -77,9 +77,27 @@ Live, stale, and offline modes remain visibly distinct. Stale state keeps the la
 
 ## Motion and direction
 
-Motion is limited to state continuity: phase selection, incoming evidence, and the Review return trace. `prefers-reduced-motion: reduce` removes all essential movement while retaining state labels and relationships.
+Motion is limited to state continuity: phase selection, incoming evidence, the Review return trace, and non-essential edge flow on interactive diagrams. `prefers-reduced-motion: reduce` removes all essential movement while retaining state labels and relationships.
 
 Horizontal relationships mirror in RTL. Text, paths, and event IDs use explicit bidi isolation. Layout remains usable at 320px and 200% zoom without horizontal page scrolling.
+
+## Interactive diagram contracts
+
+Living maps explain relationships that prose cannot:
+
+- Phase constellation: sequence edges between Plan → Execute → Review → Deploy gate, plus animated return loops for remediation cycles.
+- Relation graphs: findings, evidence, and remediation targets with `blocks` / `resolves` / `evidence-for` edges.
+- Event river: ordered durable events with actor and phase metadata.
+- Readiness chain: validations and review clearance derive ready; authorization remains a separate human node.
+- Orientation strip: always shows current phase vs viewed report.
+
+### Interaction rules
+
+- Click or activate a node to focus it and dim unrelated edges.
+- Arrow keys follow outgoing/incoming relationships.
+- Every diagram ships an ordered text/list equivalent under the SVG.
+- Status uses shape + label, never color alone.
+- Agents rebuild maps from `apps/web/src/visuals/*` primitives (`geometry`, `InteractiveGraph`, model builders) instead of inventing one-off SVG.
 
 ## Template-first rendering
 

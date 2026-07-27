@@ -5,7 +5,7 @@ import { doctorProject } from './doctor.js'
 import { PhasewireError } from './errors.js'
 import { pathExists, readJson, readTextFile, writeJsonReplace } from './files.js'
 import { assertSecurePath, assertSecurePhasewireRoot } from './paths.js'
-import { configAsJson } from './store-helpers.js'
+import { CONFIG_SCHEMA_VERSION, DEFAULT_UI_PREFS, configAsJson } from './store-helpers.js'
 import type { JsonValue, MigrationResult, PhasewireConfig, ProjectExport } from './types.js'
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -38,7 +38,33 @@ function migrateConfigV0(value: unknown): PhasewireConfig {
     ? value.defaultTemplateId
     : typeof value.templateId === 'string' ? value.templateId : 'phasewire.default'
   const requiredValidations = strings(value.requiredValidations) ?? strings(value.requiredChecks) ?? []
-  return { schemaVersion: 1, projectId: value.projectId, defaultTemplateId, requiredValidations }
+  return {
+    schemaVersion: CONFIG_SCHEMA_VERSION,
+    projectId: value.projectId,
+    defaultTemplateId,
+    requiredValidations,
+    ui: { ...DEFAULT_UI_PREFS },
+  }
+}
+
+function migrateConfigV1(value: unknown): PhasewireConfig {
+  if (
+    !isObject(value) ||
+    value.schemaVersion !== 1 ||
+    typeof value.projectId !== 'string' ||
+    typeof value.defaultTemplateId !== 'string' ||
+    !Array.isArray(value.requiredValidations) ||
+    !value.requiredValidations.every((entry) => typeof entry === 'string')
+  ) {
+    throw new PhasewireError('Invalid schema v1 config fixture', 'INVALID_CONFIG')
+  }
+  return {
+    schemaVersion: CONFIG_SCHEMA_VERSION,
+    projectId: value.projectId,
+    defaultTemplateId: value.defaultTemplateId,
+    requiredValidations: value.requiredValidations,
+    ui: { ...DEFAULT_UI_PREFS },
+  }
 }
 
 export async function migrateProject(
@@ -51,29 +77,47 @@ export async function migrateProject(
   if (version === undefined) {
     await initialize()
     return {
-      fromVersion: 1, toVersion: 1, changed: false, readOnly: false,
-      exportAvailable: true, diagnostics: await doctorProject(absoluteRoot),
+      fromVersion: CONFIG_SCHEMA_VERSION,
+      toVersion: CONFIG_SCHEMA_VERSION,
+      changed: false,
+      readOnly: false,
+      exportAvailable: true,
+      diagnostics: await doctorProject(absoluteRoot),
     }
   }
-  if (version > 1) {
+  if (version > CONFIG_SCHEMA_VERSION) {
     return {
-      fromVersion: version, toVersion: version, changed: false, readOnly: true,
-      exportAvailable: true, diagnostics: await doctorProject(absoluteRoot),
+      fromVersion: version,
+      toVersion: version,
+      changed: false,
+      readOnly: true,
+      exportAvailable: true,
+      diagnostics: await doctorProject(absoluteRoot),
     }
   }
-  if (version === 1) {
+  if (version === CONFIG_SCHEMA_VERSION) {
     return {
-      fromVersion: 1, toVersion: 1, changed: false, readOnly: false,
-      exportAvailable: true, diagnostics: await doctorProject(absoluteRoot),
+      fromVersion: CONFIG_SCHEMA_VERSION,
+      toVersion: CONFIG_SCHEMA_VERSION,
+      changed: false,
+      readOnly: false,
+      exportAvailable: true,
+      diagnostics: await doctorProject(absoluteRoot),
     }
   }
+
   const configPath = join(phasewireRoot, 'config.json')
-  const migrated = migrateConfigV0(await readJson(configPath, absoluteRoot))
+  const raw = await readJson(configPath, absoluteRoot)
+  const migrated = version === 0 ? migrateConfigV0(raw) : migrateConfigV1(raw)
   await writeJsonReplace(configPath, configAsJson(migrated), absoluteRoot)
   await initialize()
   return {
-    fromVersion: 0, toVersion: 1, changed: true, readOnly: false,
-    exportAvailable: true, diagnostics: await doctorProject(absoluteRoot),
+    fromVersion: version,
+    toVersion: CONFIG_SCHEMA_VERSION,
+    changed: true,
+    readOnly: false,
+    exportAvailable: true,
+    diagnostics: await doctorProject(absoluteRoot),
   }
 }
 
@@ -114,7 +158,7 @@ export async function exportProject(projectRoot: string): Promise<ProjectExport>
   const files: Record<string, JsonValue> = {}
   await collectExportFiles(absoluteRoot, phasewireRoot, files)
   return {
-    schemaVersion: await readProjectSchemaVersion(absoluteRoot) ?? 1,
+    schemaVersion: await readProjectSchemaVersion(absoluteRoot) ?? CONFIG_SCHEMA_VERSION,
     exportedAt: new Date().toISOString(), projectRoot: '.', files,
   }
 }

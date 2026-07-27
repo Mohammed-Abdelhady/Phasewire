@@ -211,7 +211,7 @@ describe('reconciliation, handoffs, templates, and migrations', () => {
       .toContain('layoutRules.maximumColumns must be a positive integer')
   })
 
-  it('migrates v0 config fixtures and keeps newer majors read-only but exportable', async () => {
+  it('migrates v0/v1 config fixtures and keeps newer majors read-only but exportable', async () => {
     const legacyRoot = await temporaryProject()
     await mkdir(join(legacyRoot, '.phasewire'), { recursive: true })
     await writeFile(join(legacyRoot, '.phasewire', 'config.json'), JSON.stringify({
@@ -219,17 +219,47 @@ describe('reconciliation, handoffs, templates, and migrations', () => {
     }))
     const legacyStore = new WorkflowStore(legacyRoot)
     const migration = await legacyStore.migrate()
-    expect(migration).toMatchObject({ fromVersion: 0, toVersion: 1, changed: true, readOnly: false })
-    expect(await legacyStore.readConfig()).toMatchObject({ schemaVersion: 1, requiredValidations: ['lint'] })
+    expect(migration).toMatchObject({ fromVersion: 0, toVersion: 2, changed: true, readOnly: false })
+    expect(await legacyStore.readConfig()).toMatchObject({
+      schemaVersion: 2,
+      requiredValidations: ['lint'],
+      ui: { autoOpenOnMutate: true, autoOpenOnStatusWithId: false },
+    })
+
+    const v1Root = await temporaryProject()
+    await mkdir(join(v1Root, '.phasewire'), { recursive: true })
+    await writeFile(join(v1Root, '.phasewire', 'config.json'), JSON.stringify({
+      schemaVersion: 1,
+      projectId: 'v1-project',
+      defaultTemplateId: 'phasewire.default',
+      requiredValidations: ['lint', 'test'],
+    }))
+    const v1Store = new WorkflowStore(v1Root)
+    expect(await v1Store.migrate()).toMatchObject({ fromVersion: 1, toVersion: 2, changed: true, readOnly: false })
+    expect(await v1Store.readConfig()).toMatchObject({
+      schemaVersion: 2,
+      requiredValidations: ['lint', 'test'],
+      ui: { autoOpenOnMutate: true, autoOpenOnStatusWithId: false },
+    })
+    await expect(v1Store.writeConfig({
+      ui: { autoOpenOnMutate: false, autoOpenOnStatusWithId: false },
+      adapters: { hosts: ['claude'], scope: 'project', installedAt: '2026-07-27T00:00:00.000Z' },
+      defaultHarness: 'claude',
+    })).resolves.toMatchObject({
+      schemaVersion: 2,
+      defaultHarness: 'claude',
+      adapters: { hosts: ['claude'], scope: 'project' },
+      ui: { autoOpenOnMutate: false, autoOpenOnStatusWithId: false },
+    })
 
     const newerRoot = await temporaryProject()
     await mkdir(join(newerRoot, '.phasewire'), { recursive: true })
-    await writeFile(join(newerRoot, '.phasewire', 'config.json'), JSON.stringify({ schemaVersion: 2, future: true }))
+    await writeFile(join(newerRoot, '.phasewire', 'config.json'), JSON.stringify({ schemaVersion: 3, future: true }))
     const newerStore = new WorkflowStore(newerRoot)
-    expect(await newerStore.migrate()).toMatchObject({ fromVersion: 2, changed: false, readOnly: true, exportAvailable: true })
+    expect(await newerStore.migrate()).toMatchObject({ fromVersion: 3, changed: false, readOnly: true, exportAvailable: true })
     const exported = await newerStore.exportProject()
     expect(exported.projectRoot).toBe('.')
-    expect(exported.files['.phasewire/config.json']).toEqual({ schemaVersion: 2, future: true })
+    expect(exported.files['.phasewire/config.json']).toEqual({ schemaVersion: 3, future: true })
     await expect(newerStore.createWorkflow({
       workflowId: 'blocked', title: 'Blocked', actor: WORKER, idempotencyKey: 'create',
     })).rejects.toMatchObject({ code: 'NEWER_SCHEMA_READ_ONLY' })

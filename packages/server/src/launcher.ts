@@ -32,6 +32,9 @@ const pause = async (milliseconds: number): Promise<void> =>
     setTimeout(resolve, milliseconds)
   })
 
+/** Resolve the service entry relative to this module so monorepo and ship layouts both work. */
+const serviceEntrypoint = (): string => fileURLToPath(new URL('./index.js', import.meta.url))
+
 export const ensureService = async (
   projectRoot: string,
   options: EnsureServiceOptions = {},
@@ -39,7 +42,8 @@ export const ensureService = async (
   const current = await readEndpoint(projectRoot)
   if (current !== undefined && (await healthyEndpoint(current))) return current
 
-  const entrypoint = fileURLToPath(new URL('./index.js', import.meta.url))
+  const entrypoint = serviceEntrypoint()
+  const timeoutMs = options.timeoutMs ?? defaultTimeoutMs
   const child = spawn(process.execPath, [entrypoint, '--project-root', projectRoot], {
     cwd: projectRoot,
     detached: true,
@@ -48,11 +52,14 @@ export const ensureService = async (
   })
   child.unref()
 
-  const deadline = Date.now() + (options.timeoutMs ?? defaultTimeoutMs)
+  const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
     const endpoint = await readEndpoint(projectRoot)
     if (endpoint !== undefined && (await healthyEndpoint(endpoint))) return endpoint
     await pause(100)
   }
-  throw new Error('Phasewire service did not become ready before the launch timeout')
+
+  throw new Error(
+    `Phasewire service did not become ready within ${String(timeoutMs)}ms (entry=${entrypoint}, project=${projectRoot})`,
+  )
 }

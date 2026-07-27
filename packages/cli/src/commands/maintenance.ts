@@ -1,11 +1,17 @@
 import type { Command } from 'commander'
 
 import { printResult } from '../output.js'
-import { mutationMessage, projectContext, type HarnessOptions } from '../runtime.js'
+import {
+  mutationMessage,
+  projectContext,
+  projectCoreContext,
+  resolveHarness,
+  type HarnessOptions,
+} from '../runtime.js'
 
 export const addMaintenanceCommands = (program: Command): void => {
   program.command('doctor').action(async (_options: object, command: Command) => {
-    const context = await projectContext(command)
+    const context = await projectCoreContext(command)
     const report = await context.core.doctor()
     const ok = typeof report === 'object' && report !== null && 'ok' in report && report.ok === true
     printResult(report, context.json, () =>
@@ -15,19 +21,20 @@ export const addMaintenanceCommands = (program: Command): void => {
   })
 
   program.command('rebuild').action(async (_options: object, command: Command) => {
-    const context = await projectContext(command)
+    const context = await projectCoreContext(command)
     const report = await context.core.rebuild()
     printResult(report, context.json, () => 'Rebuilt disposable Phasewire projections.')
   })
 
   program.command('migrate').action(async (_options: object, command: Command) => {
-    const context = await projectContext(command)
+    // Avoid readConfig before migrate — older schemas throw MIGRATION_REQUIRED.
+    const context = await projectCoreContext(command)
     const result = await context.core.migrate()
     printResult(result, context.json, () => 'Phasewire project schema is current.')
   })
 
   program.command('export').action(async (_options: object, command: Command) => {
-    const context = await projectContext(command)
+    const context = await projectCoreContext(command)
     const result = await context.core.exportProject()
     printResult(result, true, () => '')
   })
@@ -35,7 +42,7 @@ export const addMaintenanceCommands = (program: Command): void => {
   program
     .command('reconcile')
     .argument('<workflow-id>')
-    .option('--harness <harness>', 'Reconciling actor', 'user')
+    .option('--harness <harness>', 'Reconciling actor')
     .requiredOption(
       '--select-parent <event-id>',
       'Current head selected as the reconciliation base',
@@ -49,8 +56,9 @@ export const addMaintenanceCommands = (program: Command): void => {
         command: Command,
       ) => {
         const context = await projectContext(command)
+        const harness = resolveHarness(options.harness, process.env, context.config)
         const value = await context.core.performAction(workflowId, 'reconcile', {
-          actor: options.harness,
+          actor: harness,
           payload: {
             resolution: {
               strategy: 'select-parent',

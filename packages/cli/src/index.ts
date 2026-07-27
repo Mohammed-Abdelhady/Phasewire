@@ -5,9 +5,11 @@ import { pathToFileURL } from 'node:url'
 import { Command } from 'commander'
 
 import { addAdapterCommands } from './commands/adapters.js'
+import { addConfigCommands } from './commands/config.js'
 import { addMaintenanceCommands } from './commands/maintenance.js'
 import { addHandoffCommands, addPhaseOwnershipCommands } from './commands/ownership.js'
 import { addProgressCommands } from './commands/progress.js'
+import { addInitCommand, addSetupCommand } from './commands/setup.js'
 import { addTemplateCommands } from './commands/templates.js'
 import { addDeploymentAuthorizationCommand, addWorkflowCommands } from './commands/workflows.js'
 import { printJson, sanitizeTerminalField } from './output.js'
@@ -20,6 +22,9 @@ export const createProgram = (): Command => {
     .option('--project-root <path>', 'Explicit Phasewire project root')
     .option('--json', 'Emit machine-readable JSON')
 
+  addInitCommand(program)
+  addSetupCommand(program)
+  addConfigCommands(program)
   addWorkflowCommands(program)
   addProgressCommands(program)
   addHandoffCommands(program)

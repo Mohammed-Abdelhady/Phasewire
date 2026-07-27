@@ -10,62 +10,34 @@ Plan → Execute → Review
 
 Durable workflow meaning is stored as immutable, Git-portable events under `.phasewire/`. A disposable local index powers the CLI and visual workbench. Blocking review findings always open a remediation cycle; a clean review can mark the workflow deployment-ready, but Phasewire never deploys.
 
-## Quick start
+## Quick start (published package)
 
-Requires **Node.js 22.13+** (Node 24 is supported in CI but not required). Run every command from the **repository root** (not `packages/*` or `apps/*`).
-
-```sh
-npm install
-npm run build
-npm run phasewire -- init
-npm run phasewire -- adapters install --host all --scope project
-npm run dev
-```
-
-Then open the workbench:
-
-- Web UI: [http://127.0.0.1:4318/](http://127.0.0.1:4318/)
-- API service: [http://127.0.0.1:4317/](http://127.0.0.1:4317/) (proxied by Vite as `/api`)
-
-`npm run dev` starts both the loopback service on **4317** and the Vite app on **4318**. If the UI shows proxy errors to `:4317`, stop the process and start `npm run dev` again from the repo root.
-
-## CLI invocation
-
-In this monorepo, `phasewire` is **not** a global shell command until you publish or `npm link` the CLI.
-
-Prefer:
+Requires **Node.js 24+** for the published `phasewire` package (monorepo engines allow 22.13+ for development).
 
 ```sh
-npm run phasewire -- <command> [args]
-```
-
-Examples:
-
-```sh
-npm run phasewire -- init
-npm run phasewire -- plan "Add idempotent webhook retries" --harness codex
-npm run phasewire -- status --json
-npm run phasewire -- handoff create <workflow-id> --to grok
-npm run phasewire -- resume <workflow-id> --harness grok
-npm run phasewire -- review <workflow-id> --harness claude
-npm run phasewire -- open <workflow-id>
-npm run phasewire -- adapters install --host all --scope project
-```
-
-Also works from the repo root after `npm install` + `npm run build`:
-
-```sh
-./node_modules/.bin/phasewire status --json
+npx phasewire init
+npx phasewire setup
+npx phasewire adapters install --host all --scope project
+npx phasewire plan "Add idempotent webhook retries" --harness codex
 npx phasewire status --json
+npx phasewire open <workflow-id>
 ```
 
-Optional global link (developer machine only):
+Or install globally:
 
 ```sh
-npm run build -w @phasewire/cli
-npm link -w @phasewire/cli
+npm install -g phasewire
 phasewire --help
 ```
+
+`init` creates `.phasewire/config.json` (schema v2). `setup` re-runs the same wizard on an existing project. Prefer `npx phasewire …` for consumers; monorepo scripts below are for contributors only.
+
+## Local service and workbench
+
+- `phasewire open` and default mutators (for example `plan`) start a loopback service on demand and open the visual workbench when UI auto-open is enabled.
+- Pass `--no-open` to skip the browser (automation, CI, headless agents).
+- Config keys `ui.autoOpenOnMutate` (default preference for mutators) and `ui.autoOpenOnStatusWithId` control optional open behavior; `--no-open` always wins.
+- Development monorepo pair: API on **4317**, Vite UI on **4318** via `npm run dev`. Production `open` uses an ephemeral loopback port.
 
 ## Command namespace
 
@@ -73,7 +45,7 @@ Phasewire owns one conflict-resistant namespace. Host adapters must keep the `ph
 
 | Surface | Form |
 |---|---|
-| Shell / npm script | `phasewire <command>` / `npm run phasewire -- <command>` |
+| Shell / npx | `npx phasewire <command>` / `phasewire <command>` |
 | Claude Code slash | `/phasewire`, `/phasewire:plan`, `/phasewire:execute`, … |
 | Skill hosts | `$phasewire-plan`, `$phasewire-execute`, … |
 | Antigravity (Agy) | `phasewire-*` skills/workflows under `.agent/` |
@@ -82,11 +54,8 @@ Bare `/plan`, `/execute`, `/review`, and `/resume` aliases are intentionally abs
 
 ## Harness adapters
 
-Install portable skills/commands for Claude Code, Codex, Grok, and Antigravity:
-
 ```sh
-npm run build
-npm run phasewire -- adapters install --host all --scope project
+npx phasewire adapters install --host all --scope project
 ```
 
 | Host | Triggers after install |
@@ -97,18 +66,42 @@ npm run phasewire -- adapters install --host all --scope project
 
 Restart the host session after install so slash menus refresh.
 
+## Manual npm publish runbook
+
+Publish only when explicitly authorized. From the monorepo root:
+
 ```sh
-npm run phasewire -- adapters install --host claude --scope project
-npm run phasewire -- adapters install --host all --scope user
+npm run build
+npm test
+npm run pack:ship
+npm publish -w phasewire --access public
 ```
 
-## Development
+`pack:ship` rewrites workspace imports into `packages/phasewire/dist` and copies schemas + built web assets. Inspect `packages/phasewire/` before publish. Do not use `npm publish` from package roots other than the ship package, and never bypass quality gates.
+
+## Monorepo contributor path (secondary)
+
+Requires **Node.js 22.13+** (CI also covers Node 24). Run every command from the **repository root**.
 
 ```sh
 npm install
 npm run build
-npm test
+npm run phasewire -- init
+npm run phasewire -- adapters install --host all --scope project
 npm run dev
+```
+
+Workbench while developing:
+
+- Web UI: [http://127.0.0.1:4318/](http://127.0.0.1:4318/)
+- API service: [http://127.0.0.1:4317/](http://127.0.0.1:4317/) (proxied by Vite as `/api`)
+
+CLI in this workspace (after build):
+
+```sh
+npm run phasewire -- <command> [args]
+./node_modules/.bin/phasewire status --json
+npx phasewire status --json
 ```
 
 Quality:
@@ -119,13 +112,9 @@ npm run quality:push   # quality:commit + full build + audit + browser
 npm run quality        # alias of quality:push (pre-push gate)
 ```
 
-`quality:commit` is the pre-commit gate. `quality:push` / `quality` add the full workspace build, high-severity dependency audit, and Playwright browser acceptance. `format` / `format:check` stay opt-in contributor hygiene and are not part of those aggregates. Husky installs both gates through `npm install`. Node minimum is **22.13+**; CI uses Node 24 across OS matrix plus a `verify-min-node` job on 22.13.x (browser job builds deps first).
-
-Every authored source, test, configuration, style, schema, and documentation file is limited to 350 physical lines. Generated and vendored files such as `package-lock.json`, `dist/`, and `node_modules/` are excluded. See [Quality gates](docs/quality-gates.md).
+Every authored source, test, configuration, style, schema, and documentation file is limited to 350 physical lines. See [Quality gates](docs/quality-gates.md).
 
 **Engineering bar:** [Code quality & engineering](CODE_QUALITY_AND_ENGINEERING.md) · **Review process:** [Code review](docs/code-review.md)
-
-The development web app runs through Vite and proxies project API requests to the loopback service on the fixed 4317/4318 pair. Production `phasewire open` still launches an on-demand loopback service on an ephemeral port.
 
 ## Durable and private state
 
@@ -133,7 +122,7 @@ Commit `.phasewire/config.json`, workflow events, approved plans, decisions, fin
 
 ## Security model
 
-The service binds to loopback, validates host and origin, and requires a per-session token. Project file access is root-confined. Templates are declarative data; they do not execute package code. Deployment authorization is an explicit user event and is deliberately separate from any external deployment tool.
+The service binds to loopback, validates host and origin, and requires a per-session token. Project file access is root-confined. Templates are declarative data; they do not execute package code. Auto-opening the workbench does not weaken approval or authorization gates. Deployment authorization is an explicit user event and is deliberately separate from any external deployment tool.
 
 ## Documentation
 
@@ -146,3 +135,4 @@ The service binds to loopback, validates host and origin, and requires a per-ses
 - [Code quality & engineering](CODE_QUALITY_AND_ENGINEERING.md)
 - [Code review process](docs/code-review.md)
 - [Contributor and harness rules](AGENTS.md)
+- [Published package README](packages/phasewire/README.md)

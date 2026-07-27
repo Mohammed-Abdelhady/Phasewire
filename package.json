@@ -7,7 +7,9 @@
   "packageManager": "npm@10.9.8",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/cli",
+    "packages/core",
+    "packages/server"
   ],
   "engines": {
     "node": ">=22.13.0"
@@ -36,6 +38,7 @@
     "quality:push": "npm run quality:commit && npm run quality:build && npm run quality:security && npm run quality:browser",
     "quality": "npm run quality:push",
     "phasewire": "node packages/cli/dist/index.js",
+    "pack:ship": "node scripts/pack-ship.mjs",
     "adapters:install": "npm run build -w @phasewire/cli && node packages/cli/dist/index.js adapters install --host all --scope project",
     "prepare": "husky"
   },

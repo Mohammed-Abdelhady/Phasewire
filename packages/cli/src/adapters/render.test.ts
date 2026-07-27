@@ -100,6 +100,25 @@ describe('renderClaudeCommandMarkdown frontmatter', () => {
   })
 })
 
+describe('skill recovery guidance', () => {
+  it('prefers npx phasewire and keeps monorepo as secondary', () => {
+    const skill = ADAPTER_SKILLS[0]
+    expect(skill).toBeDefined()
+    if (skill === undefined) return
+    const markdown = renderSkillMarkdown(skill, 'claude')
+    expect(markdown).toContain('npx phasewire init')
+    expect(markdown).toContain('Prefer `npx phasewire')
+    expect(markdown).toContain('In this monorepo only')
+    expect(markdown).toContain('npm run phasewire --')
+    const recoveryIndex = markdown.indexOf('## Recovery')
+    const monorepoIndex = markdown.indexOf('npm run build')
+    const npxIndex = markdown.indexOf('npx phasewire')
+    expect(recoveryIndex).toBeGreaterThan(-1)
+    expect(npxIndex).toBeGreaterThan(recoveryIndex)
+    expect(monorepoIndex).toBeGreaterThan(npxIndex)
+  })
+})
+
 describe('review skill GitHub write policy', () => {
   const reviewSkill = ADAPTER_SKILLS.find((skill) => skill.id === 'review')
   if (reviewSkill === undefined) {

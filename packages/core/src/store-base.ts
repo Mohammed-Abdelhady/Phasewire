@@ -5,17 +5,23 @@ import { createEventEnvelope } from './canonical.js'
 import {
   ActiveClaimError, PhasewireError, StoreBusyError, WorkflowConflictError, WorkflowNotFoundError,
 } from './errors.js'
-import { acquireDirectoryLock, pathExists, readJson, writeJsonImmutable, writeTextImmutable } from './files.js'
+import {
+  assertAdaptersConfig, mergeConfigPartial, parsePhasewireConfig,
+} from './config.js'
+import {
+  acquireDirectoryLock, pathExists, readJson, writeJsonImmutable, writeJsonReplace, writeTextImmutable,
+} from './files.js'
 import { assertSecurePath, assertSecurePhasewireRoot, assertSecureRootEntry } from './paths.js'
 import { assertWorkflowEvent, replayWorkflow } from './replay.js'
 import {
-  DEFAULT_VALIDATIONS, MAX_CLAIM_TTL_MS, PHASEWIRE_DIRS, assertEventInput, assertSafeIdentifier, assertTimestamp,
-  configAsJson, equalSets, eventAsJson, eventIntent, inputIntent,
+  CONFIG_SCHEMA_VERSION, DEFAULT_UI_PREFS, DEFAULT_VALIDATIONS, MAX_CLAIM_TTL_MS, PHASEWIRE_DIRS,
+  assertEventInput, assertSafeIdentifier, assertTimestamp, configAsJson, equalSets, eventAsJson, eventIntent,
+  inputIntent,
 } from './store-helpers.js'
 import { TemplateRegistry } from './templates.js'
 import type {
-  CreateWorkflowInput, EventInput, InitOptions, PhasewireConfig, WorkflowEvent, WorkflowProjection, WorkflowStoreOptions,
-  WorkflowSummary,
+  CreateWorkflowInput, EventInput, InitOptions, PhasewireConfig, WorkflowEvent, WorkflowProjection,
+  WorkflowStoreOptions, WorkflowSummary, WriteConfigInput,
 } from './types.js'
 
 export class WorkflowStoreBase {
@@ -40,10 +46,13 @@ export class WorkflowStoreBase {
     await assertSecurePhasewireRoot(this.projectRoot, this.phasewireRoot)
     const defaultProjectId = basename(this.projectRoot).replace(/[^A-Za-z0-9._-]/g, '-') || 'phasewire-project'
     const config: PhasewireConfig = {
-      schemaVersion: 1,
+      schemaVersion: CONFIG_SCHEMA_VERSION,
       projectId: options.projectId ?? defaultProjectId,
       defaultTemplateId: options.defaultTemplateId ?? 'phasewire.default',
       requiredValidations: [...(options.requiredValidations ?? DEFAULT_VALIDATIONS)],
+      ...(options.defaultHarness === undefined ? {} : { defaultHarness: options.defaultHarness }),
+      ...(options.adapters === undefined ? {} : { adapters: options.adapters }),
+      ui: options.ui ?? { ...DEFAULT_UI_PREFS },
     }
     assertSafeIdentifier(config.projectId, 'projectId')
     const directories = [
@@ -69,22 +78,21 @@ export class WorkflowStoreBase {
   public async readConfig(): Promise<PhasewireConfig> {
     const path = join(this.phasewireRoot, 'config.json')
     await this.assertSecureStorePath(path)
-    const value = await readJson(path, this.projectRoot)
-    if (typeof value !== 'object' || value === null || !('schemaVersion' in value) || typeof value.schemaVersion !== 'number') {
-      throw new PhasewireError('Invalid .phasewire/config.json', 'INVALID_CONFIG')
+    return parsePhasewireConfig(await readJson(path, this.projectRoot))
+  }
+
+  public async writeConfig(partial: WriteConfigInput): Promise<PhasewireConfig> {
+    await this.assertWritableSchema()
+    const next = mergeConfigPartial(await this.readConfig(), partial)
+    assertSafeIdentifier(next.projectId, 'projectId')
+    if (next.defaultHarness !== undefined && next.defaultHarness.trim().length === 0) {
+      throw new PhasewireError('defaultHarness must be a non-empty string', 'INVALID_CONFIG')
     }
-    if (value.schemaVersion > 1) throw new PhasewireError('A newer schema is read-only; export is still available', 'NEWER_SCHEMA_READ_ONLY')
-    if (value.schemaVersion < 1) throw new PhasewireError('Project schema migration is required', 'MIGRATION_REQUIRED')
-    if (!('projectId' in value) || typeof value.projectId !== 'string' ||
-      !('defaultTemplateId' in value) || typeof value.defaultTemplateId !== 'string' ||
-      !('requiredValidations' in value) || !Array.isArray(value.requiredValidations) ||
-      !value.requiredValidations.every((entry) => typeof entry === 'string')) {
-      throw new PhasewireError('Invalid .phasewire/config.json', 'INVALID_CONFIG')
-    }
-    return {
-      schemaVersion: 1, projectId: value.projectId, defaultTemplateId: value.defaultTemplateId,
-      requiredValidations: value.requiredValidations,
-    }
+    if (next.adapters !== undefined) assertAdaptersConfig(next.adapters)
+    const configPath = join(this.phasewireRoot, 'config.json')
+    await this.assertSecureStorePath(configPath)
+    await writeJsonReplace(configPath, configAsJson(next), this.projectRoot)
+    return this.readConfig()
   }
 
   public async createWorkflow(input: CreateWorkflowInput): Promise<WorkflowEvent> {
@@ -218,8 +226,12 @@ export class WorkflowStoreBase {
     if (!(await pathExists(configPath))) return
     const config = await readJson(configPath, this.projectRoot)
     if (typeof config === 'object' && config !== null && 'schemaVersion' in config && typeof config.schemaVersion === 'number') {
-      if (config.schemaVersion > 1) throw new PhasewireError('A newer schema is read-only; export is still available', 'NEWER_SCHEMA_READ_ONLY')
-      if (config.schemaVersion < 1) throw new PhasewireError('Project schema migration is required', 'MIGRATION_REQUIRED')
+      if (config.schemaVersion > CONFIG_SCHEMA_VERSION) {
+        throw new PhasewireError('A newer schema is read-only; export is still available', 'NEWER_SCHEMA_READ_ONLY')
+      }
+      if (config.schemaVersion < CONFIG_SCHEMA_VERSION) {
+        throw new PhasewireError('Project schema migration is required', 'MIGRATION_REQUIRED')
+      }
     }
   }
 

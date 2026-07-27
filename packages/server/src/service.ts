@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto'
-import { fileURLToPath } from 'node:url'
+import { existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { buildServiceApp } from './app.js'
 import { PhasewireCoreFacade } from './core-facade.js'
@@ -8,8 +9,19 @@ import { removeOwnedEndpoint, writeEndpoint } from './endpoint.js'
 import { isLoopbackHostname } from './security.js'
 import type { RunningService, ServiceOptions } from './types.js'
 
-const defaultWebRoot = (): string =>
-  resolve(dirname(fileURLToPath(import.meta.url)), '../../../apps/web/dist')
+const moduleDirectory = (): string => dirname(fileURLToPath(import.meta.url))
+
+/** Prefer env, then the shipped package web/ tree, then the monorepo Vite build output. */
+const defaultWebRoot = (): string => {
+  const fromEnv = process.env.PHASEWIRE_WEB_ROOT
+  if (fromEnv !== undefined && fromEnv.trim() !== '') return resolve(fromEnv)
+
+  const directory = moduleDirectory()
+  const shipWebRoot = resolve(directory, '../../web')
+  if (existsSync(shipWebRoot)) return shipWebRoot
+
+  return resolve(directory, '../../../apps/web/dist')
+}
 
 export const startService = async (options: ServiceOptions): Promise<RunningService> => {
   const host = options.host ?? '127.0.0.1'

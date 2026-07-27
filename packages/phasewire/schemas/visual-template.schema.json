@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://phasewire.dev/schemas/visual-template.schema.json",
+  "title": "Phasewire declarative visual template",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "version",
+    "name",
+    "description",
+    "intendedUse",
+    "excludedUses",
+    "inputSchema",
+    "requiredData",
+    "supportedRelations",
+    "layoutRules",
+    "semanticTokens",
+    "motionContract",
+    "renderingConstraints",
+    "rendererCompatibility",
+    "outputFormats",
+    "textAlternative",
+    "regions",
+    "accessibility",
+    "integrity"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[A-Za-z0-9.-]+)?$" },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "intendedUse": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "excludedUses": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "inputSchema": { "type": "object" },
+    "requiredData": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "supportedRelations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["sequence", "depends-on", "blocks", "resolves", "evidence-for", "parent-child"] }
+    },
+    "layoutRules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preferredFlow", "minimumViewportWidth", "maximumColumns", "dense", "rtlMirrored"],
+      "properties": {
+        "preferredFlow": { "enum": ["horizontal", "vertical", "radial", "adaptive"] },
+        "minimumViewportWidth": { "type": "integer", "minimum": 1 },
+        "maximumColumns": { "type": "integer", "minimum": 1 },
+        "dense": { "type": "boolean" },
+        "rtlMirrored": { "type": "boolean" }
+      }
+    },
+    "semanticTokens": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["color", "statuses"],
+      "properties": {
+        "color": { "type": "object", "additionalProperties": { "type": "string" } },
+        "statuses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label", "colorToken", "nonColorCue"],
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" },
+              "colorToken": { "type": "string" },
+              "nonColorCue": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "motionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabledByDefault", "transitionDurationMs", "easing", "reducedMotion", "noEssentialMotion"],
+      "properties": {
+        "enabledByDefault": { "type": "boolean" },
+        "transitionDurationMs": { "type": "integer", "minimum": 0 },
+        "easing": { "type": "string" },
+        "reducedMotion": { "enum": ["disable", "instant", "crossfade"] },
+        "noEssentialMotion": { "const": true }
+      }
+    },
+    "renderingConstraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semanticHtml", "noSvgRequired", "maximumNodes"],
+      "properties": {
+        "semanticHtml": { "const": true },
+        "noSvgRequired": { "const": true },
+        "maximumNodes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "rendererCompatibility": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["web", "terminal", "markdown"] }
+    },
+    "outputFormats": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["interactive", "html", "markdown", "json"] }
+    },
+    "textAlternative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "includesStatusAndRelationships"],
+      "properties": {
+        "summary": { "type": "string", "minLength": 1 },
+        "binding": { "type": "string" },
+        "includesStatusAndRelationships": { "const": true }
+      }
+    },
+    "regions": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/node" } },
+    "accessibility": { "$ref": "#/$defs/rootAccessibility" },
+    "integrity": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "accessibility"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "kind": { "enum": ["section", "stack", "grid", "text", "metric", "list", "timeline", "evidence", "action"] },
+        "label": { "type": "string" },
+        "binding": { "type": "string", "pattern": "^[A-Za-z0-9_.]+$" },
+        "action": { "enum": ["approve-plan", "record-decision", "request-review", "record-authorization"] },
+        "accessibility": { "$ref": "#/$defs/nodeAccessibility" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/node" } }
+      }
+    },
+    "nodeAccessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": { "type": "string" },
+        "label": { "type": "string" },
+        "description": { "type": "string" },
+        "headingLevel": { "type": "integer", "minimum": 1, "maximum": 6 },
+        "live": { "enum": ["off", "polite", "assertive"] },
+        "keyboardAction": { "type": "string" },
+        "reducedMotionEquivalent": { "type": "boolean" },
+        "directionAware": { "type": "boolean" }
+      }
+    },
+    "rootAccessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["landmarkLabel", "readingOrder", "keyboardOperable", "reducedMotionEquivalent", "directionAware"],
+      "properties": {
+        "landmarkLabel": { "type": "string", "minLength": 1 },
+        "readingOrder": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "keyboardOperable": { "const": true },
+        "reducedMotionEquivalent": { "const": true },
+        "directionAware": { "const": true }
+      }
+    }
+  }
+}

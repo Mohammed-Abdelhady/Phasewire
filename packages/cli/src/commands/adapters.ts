@@ -1,5 +1,9 @@
-import type { Command } from 'commander'
+import { access } from 'node:fs/promises'
 import { resolve } from 'node:path'
+
+import type { Command } from 'commander'
+
+import { PhasewireCoreFacade } from '@phasewire/server/core-facade'
 
 import { installAdapters, parseAdapterHosts } from '../adapters/install.js'
 import type { AdapterScope } from '../adapters/hosts.js'
@@ -10,6 +14,15 @@ import { globalOptions } from '../runtime.js'
 const parseScope = (value: string): AdapterScope => {
   if (value === 'project' || value === 'user') return value
   throw new Error("Scope must be 'project' or 'user'")
+}
+
+const projectExists = async (root: string): Promise<boolean> => {
+  try {
+    await access(resolve(root, '.phasewire', 'config.json'))
+    return true
+  } catch {
+    return false
+  }
 }
 
 export const addAdapterCommands = (program: Command): void => {
@@ -31,6 +44,16 @@ export const addAdapterCommands = (program: Command): void => {
             )
           : resolve(globals.projectRoot ?? process.cwd())
       const result = await installAdapters({ hosts, projectRoot, scope })
+      if (await projectExists(projectRoot)) {
+        const core = new PhasewireCoreFacade(projectRoot)
+        await core.writeConfig({
+          adapters: {
+            hosts: [...result.hosts],
+            scope: result.scope,
+            installedAt: new Date().toISOString(),
+          },
+        })
+      }
       printResult(result, globals.json ?? false, () => {
         const hostList = result.hosts.join(', ')
         return [

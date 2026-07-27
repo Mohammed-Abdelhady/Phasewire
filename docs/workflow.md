@@ -10,21 +10,48 @@ Plan → Execute → Review
 
 Review findings with blocking severity return the workflow to remediation planning. The new plan must be approved, executed, and independently reviewed. Zero blocking findings and all required validations derive deployment readiness. Readiness does not deploy anything.
 
-## Start and inspect
+## Init and setup
 
-From the monorepo root, invoke the CLI through npm until the binary is linked globally:
+Prefer the published CLI:
 
 ```sh
-npm run build
-npm run phasewire -- init
-npm run phasewire -- plan "Add idempotent webhook retries" --harness codex
-npm run phasewire -- status --json
-npm run phasewire -- open <workflow-id>
+npx phasewire init
+npx phasewire setup
 ```
 
-`phasewire plan` opens the visual workbench by default. Use `--no-open` in automation. The browser records material decisions and the explicit plan approval event.
+- `init` creates `.phasewire/` and config schema **v2** (project id, default template, required validations, optional `defaultHarness`, `adapters`, and `ui`).
+- `setup` re-runs the wizard on an existing project without wiping durable events.
+- Interactive TTY prompts for project id, default harness, adapter hosts/scope, validations, and auto-open preference.
+- Non-interactive: `--yes` / `--json` / non-TTY use flags and defaults (`--project-id`, `--default-harness`, `--hosts`, `--scope`, `--validation`, `--auto-open` / `--no-auto-open`, `--no-adapters`).
 
-If `phasewire: command not found` appears, you are either outside the repo root or expecting a global install. Use `npm run phasewire -- …` or `./node_modules/.bin/phasewire …` instead.
+Config inspection and edits:
+
+```sh
+npx phasewire config show
+npx phasewire config set ui.autoOpenOnMutate true
+```
+
+## Start and inspect
+
+```sh
+npx phasewire plan "Add idempotent webhook retries" --harness codex
+npx phasewire status --json
+npx phasewire open <workflow-id>
+```
+
+### Auto-open and `--no-open`
+
+- Mutating commands that may surface the workbench honor `ui.autoOpenOnMutate` (default preference after setup).
+- `status <workflow-id>` opens only when `ui.autoOpenOnStatusWithId` is true.
+- Explicit `open` always launches unless `--no-open` is set.
+- `--no-open` always skips the browser (automation, CI, agents) and, for `open --no-open`, can print a one-time session URL for copy/paste.
+- Auto-open is a UX preference only; it never bypasses plan approval, CSRF-protected user gates, or deployment authorization.
+
+In this monorepo only, after `npm run build`:
+
+```sh
+npm run phasewire -- plan "…" --harness codex
+```
 
 ## Phase ownership and continuation
 
@@ -85,7 +112,7 @@ Authorization can be recorded only after readiness and only through an interacti
 CLI commands always start with `phasewire`. Install host adapters once per project or user profile:
 
 ```sh
-npm run phasewire -- adapters install --host all --scope project
+npx phasewire adapters install --host all --scope project
 ```
 
 After install and a host restart:

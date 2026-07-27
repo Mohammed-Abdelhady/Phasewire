@@ -3,17 +3,45 @@ import type { HandoffPacket } from './handoff.js'
 import type { JsonObject, JsonValue } from './json.js'
 import type { WorkflowProjection } from './workflow.js'
 
+export type AdapterConfigScope = 'project' | 'user'
+
+export interface PhasewireAdaptersConfig {
+  readonly hosts: readonly string[]
+  readonly scope: AdapterConfigScope
+  readonly installedAt?: string
+}
+
+export interface PhasewireUiConfig {
+  readonly autoOpenOnMutate: boolean
+  readonly autoOpenOnStatusWithId: boolean
+}
+
 export interface PhasewireConfig {
-  readonly schemaVersion: 1
+  readonly schemaVersion: 2
   readonly projectId: string
   readonly defaultTemplateId: string
   readonly requiredValidations: readonly string[]
+  readonly defaultHarness?: string
+  readonly adapters?: PhasewireAdaptersConfig
+  readonly ui?: PhasewireUiConfig
 }
 
 export interface InitOptions {
   readonly projectId?: string
   readonly defaultTemplateId?: string
   readonly requiredValidations?: readonly string[]
+  readonly defaultHarness?: string
+  readonly adapters?: PhasewireAdaptersConfig
+  readonly ui?: PhasewireUiConfig
+}
+
+export interface WriteConfigInput {
+  readonly projectId?: string
+  readonly defaultTemplateId?: string
+  readonly requiredValidations?: readonly string[]
+  readonly defaultHarness?: string
+  readonly adapters?: PhasewireAdaptersConfig
+  readonly ui?: PhasewireUiConfig
 }
 
 export interface WorkflowStoreOptions {

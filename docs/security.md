@@ -14,6 +14,17 @@ Harness names are coordination identities in v1, not authentication principals: 
 - Store endpoint metadata with owner-only permissions and atomic, no-follow writes.
 - Keep launch capabilities out of normal CLI and JSON output; only explicit `open --no-open` prints a one-time session URL.
 
+## Auto-open does not weaken gates
+
+UI preferences such as `ui.autoOpenOnMutate`, `ui.autoOpenOnStatusWithId`, and the default browser launch from mutators only control whether a loopback workbench URL is opened. They do not:
+
+- grant plan approval or deployment authorization,
+- skip CSRF or interactive cookie requirements,
+- relax host/origin validation, token checks, or root-confined filesystem access,
+- turn harness coordination identities into authentication principals.
+
+`--no-open` is the supported automation escape hatch; security policy is identical whether the browser opens or not.
+
 ## Filesystem boundary
 
 Every identifier is portable and path-safe. Reads and writes resolve against the real project root, reject traversal, reject symbolic-link escapes, and use no-follow final-file operations where the platform supports them. Runtime locks and projections stay under `.phasewire/.runtime/`.

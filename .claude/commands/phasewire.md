@@ -1,5 +1,5 @@
 ---
-description: Use for Phasewire workflow control across harnesses. Triggers on /phasewire, /phasewire:*, phasewire plan/execute/review/resume/status/handoff/open, or handoff between codex, grok, claude, and agy.
+description: "Use for Phasewire workflow control across harnesses. Triggers on /phasewire, /phasewire:*, phasewire plan/execute/review/resume/status/handoff/open, or handoff between codex, grok, claude, and agy."
 ---
 
 # Phasewire

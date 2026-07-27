@@ -1,11 +1,11 @@
 ---
-name: resume
-description: |
+name: "resume"
+description: |-
   Use when continuing a validated Phasewire handoff in the current harness. Trigger with /phasewire:resume or $phasewire-resume.
 argument-hint: "<workflow-id>"
 version: 0.1.0
 license: MIT
-compatibility: Claude Code; requires the phasewire CLI on PATH or via npm workspace script
+compatibility: "Claude Code; requires the phasewire CLI on PATH or via npm workspace script"
 tags: [phasewire, workflow, harness-adapter]
 ---
 

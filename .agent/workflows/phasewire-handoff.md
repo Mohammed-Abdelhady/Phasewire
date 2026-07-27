@@ -1,11 +1,11 @@
 ---
-name: phasewire-handoff
-description: |
+name: "phasewire-handoff"
+description: |-
   Use when creating a portable Phasewire handoff to another harness. Trigger with /phasewire:handoff or $phasewire-handoff.
 argument-hint: "<workflow-id> --to <harness>"
 version: 0.1.0
 license: MIT
-compatibility: Antigravity (Agy); requires the phasewire CLI on PATH or via npm workspace script
+compatibility: "Antigravity (Agy); requires the phasewire CLI on PATH or via npm workspace script"
 tags: [phasewire, workflow, harness-adapter]
 ---
 

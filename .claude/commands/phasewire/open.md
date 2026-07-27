@@ -1,5 +1,5 @@
 ---
-description: Use when opening the local Phasewire visual workbench. Trigger with /phasewire:open or $phasewire-open.
+description: "Use when opening the local Phasewire visual workbench. Trigger with /phasewire:open or $phasewire-open."
 ---
 
 # Phasewire open

@@ -1,5 +1,5 @@
 ---
-description: Use when starting a Phasewire workflow from a goal. Trigger with /phasewire:plan, $phasewire-plan, or "phasewire plan".
+description: "Use when starting a Phasewire workflow from a goal. Trigger with /phasewire:plan, $phasewire-plan, or \"phasewire plan\"."
 ---
 
 # Phasewire plan

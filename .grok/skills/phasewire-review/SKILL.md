@@ -1,11 +1,11 @@
 ---
-name: phasewire-review
-description: |
+name: "phasewire-review"
+description: |-
   Use when starting an independent Phasewire review (workflow and/or code). Trigger with /phasewire:review or $phasewire-review. Always apply CODE_QUALITY_AND_ENGINEERING.md multi-axis bar.
 argument-hint: "<workflow-id>"
 version: 0.1.0
 license: MIT
-compatibility: Grok; requires the phasewire CLI on PATH or via npm workspace script
+compatibility: "Grok; requires the phasewire CLI on PATH or via npm workspace script"
 tags: [phasewire, workflow, harness-adapter]
 ---
 
@@ -37,8 +37,10 @@ Portable Phasewire adapter for **Grok**.
 3. Run `phasewire review <workflow-id> --harness <host> --json`.
 4. Apply picky multi-axis review on changed code: reuse, security, correctness, re-render, perf, a11y, i18n/RTL, gate honesty.
 5. Record findings with `phasewire finding` and validations with `phasewire validate`. Blocking findings must open remediation, not be silently cleared.
-6. If a GitHub PR is in scope: post start comment, visual guide (`## Visual guide — what this PR does`), inline Critical/Warning notes, and finish with `Finished reviewing this one.` plus an Axes line.
-7. Finish with `phasewire complete-review` only after evidence is recorded and blocking issues are filed or fixed.
+6. Keep review findings local/draft-only by default. Do not post to GitHub unless the user explicitly authorizes an external write for this review.
+7. Post to GitHub only when authorization is explicit AND the current repository and PR number are unambiguous; otherwise keep the review local.
+8. When posting is authorized and target-bound, submit one batched formal review (summary + inline notes as needed; visual guide may live inside the batch body or local draft). Do not emit a mandatory multi-comment start/visual-guide/finish spam sequence.
+9. Finish with `phasewire complete-review` only after evidence is recorded and blocking issues are filed or fixed.
 
 ## Recovery
 

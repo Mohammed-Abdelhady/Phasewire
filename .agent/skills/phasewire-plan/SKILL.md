@@ -1,11 +1,11 @@
 ---
-name: phasewire-plan
-description: |
+name: "phasewire-plan"
+description: |-
   Use when starting a Phasewire workflow from a goal. Trigger with /phasewire:plan, $phasewire-plan, or "phasewire plan".
-argument-hint: ""<goal>" [--template <id>] [--validation <check>]"
+argument-hint: "\"<goal>\" [--template <id>] [--validation <check>]"
 version: 0.1.0
 license: MIT
-compatibility: Antigravity (Agy); requires the phasewire CLI on PATH or via npm workspace script
+compatibility: "Antigravity (Agy); requires the phasewire CLI on PATH or via npm workspace script"
 tags: [phasewire, workflow, harness-adapter]
 ---
 

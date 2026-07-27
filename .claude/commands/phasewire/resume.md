@@ -1,5 +1,5 @@
 ---
-description: Use when continuing a validated Phasewire handoff in the current harness. Trigger with /phasewire:resume or $phasewire-resume.
+description: "Use when continuing a validated Phasewire handoff in the current harness. Trigger with /phasewire:resume or $phasewire-resume."
 ---
 
 # Phasewire resume

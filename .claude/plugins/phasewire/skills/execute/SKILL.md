@@ -1,11 +1,11 @@
 ---
-name: execute
-description: |
+name: "execute"
+description: |-
   Use when beginning or continuing Phasewire execution after plan approval. Trigger with /phasewire:execute or $phasewire-execute.
 argument-hint: "<workflow-id>"
 version: 0.1.0
 license: MIT
-compatibility: Claude Code; requires the phasewire CLI on PATH or via npm workspace script
+compatibility: "Claude Code; requires the phasewire CLI on PATH or via npm workspace script"
 tags: [phasewire, workflow, harness-adapter]
 ---
 

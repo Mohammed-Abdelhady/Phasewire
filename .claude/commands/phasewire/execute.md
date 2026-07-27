@@ -1,5 +1,5 @@
 ---
-description: Use when beginning or continuing Phasewire execution after plan approval. Trigger with /phasewire:execute or $phasewire-execute.
+description: "Use when beginning or continuing Phasewire execution after plan approval. Trigger with /phasewire:execute or $phasewire-execute."
 ---
 
 # Phasewire execute

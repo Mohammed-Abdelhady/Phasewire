@@ -1,11 +1,11 @@
 ---
-name: open
-description: |
+name: "open"
+description: |-
   Use when opening the local Phasewire visual workbench. Trigger with /phasewire:open or $phasewire-open.
 argument-hint: "[workflow-id]"
 version: 0.1.0
 license: MIT
-compatibility: Claude Code; requires the phasewire CLI on PATH or via npm workspace script
+compatibility: "Claude Code; requires the phasewire CLI on PATH or via npm workspace script"
 tags: [phasewire, workflow, harness-adapter]
 ---
 

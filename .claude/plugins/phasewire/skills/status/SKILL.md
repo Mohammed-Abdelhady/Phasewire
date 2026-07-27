@@ -1,11 +1,11 @@
 ---
-name: status
-description: |
+name: "status"
+description: |-
   Use for a read-only Phasewire status snapshot. Trigger with /phasewire:status or $phasewire-status.
 argument-hint: "[workflow-id]"
 version: 0.1.0
 license: MIT
-compatibility: Claude Code; requires the phasewire CLI on PATH or via npm workspace script
+compatibility: "Claude Code; requires the phasewire CLI on PATH or via npm workspace script"
 tags: [phasewire, workflow, harness-adapter]
 ---
 

@@ -1,11 +1,11 @@
 ---
-name: phasewire
-description: |
+name: "phasewire"
+description: |-
   Use for Phasewire workflow control across harnesses. Triggers on /phasewire, /phasewire:*, phasewire plan/execute/review/resume/status/handoff/open, or handoff between codex, grok, claude, and agy.
 argument-hint: "<plan|execute|review|resume|status|handoff|open> [args]"
 version: 0.1.0
 license: MIT
-compatibility: Antigravity (Agy); requires the phasewire CLI on PATH or via npm workspace script
+compatibility: "Antigravity (Agy); requires the phasewire CLI on PATH or via npm workspace script"
 tags: [phasewire, workflow, harness-adapter]
 ---
 

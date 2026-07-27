@@ -107,6 +107,57 @@ const TEMPLATE_SEEDS: readonly TemplateSeed[] = [
     intendedUse: ['Workflow history', 'Phase progress'], excludedUses: ['Wall-clock performance claims', 'Raw conversation history'],
     primaryKind: 'timeline', primaryBinding: 'events', relations: ['sequence'], preferredFlow: 'horizontal',
   },
+  {
+    id: 'phasewire.phase-constellation', name: 'Phase Constellation',
+    description: 'Interactive phase graph with sequence edges and remediation return loops.',
+    intendedUse: ['Workbench orientation', 'Cycle navigation', 'Cross-phase explanation'],
+    excludedUses: ['Ticket boards', 'Generic dashboards'],
+    primaryKind: 'timeline', primaryBinding: 'phases', relations: ['sequence', 'blocks'], preferredFlow: 'horizontal',
+  },
+  {
+    id: 'phasewire.relation-graph', name: 'Relation Graph',
+    description: 'Interactive node-edge map for dependencies, blockers, evidence, and handoffs.',
+    intendedUse: ['Finding relationships', 'Dependency explanation', 'Evidence trails'],
+    excludedUses: ['Unbounded social graphs', 'Real-time network topology'],
+    primaryKind: 'grid', primaryBinding: 'relations', relations: ['depends-on', 'blocks', 'resolves', 'evidence-for', 'parent-child'],
+    preferredFlow: 'adaptive',
+  },
+  {
+    id: 'phasewire.event-river', name: 'Event River',
+    description: 'Animated chronological river of durable workflow events with actor labels.',
+    intendedUse: ['Execution chronology', 'Handoff storytelling'],
+    excludedUses: ['Raw console logs', 'Performance flame charts'],
+    primaryKind: 'timeline', primaryBinding: 'events', relations: ['sequence', 'evidence-for'], preferredFlow: 'horizontal',
+  },
+  {
+    id: 'phasewire.actor-handoff', name: 'Actor Handoff Map',
+    description: 'Harness and human actors with explicit ownership transfer edges.',
+    intendedUse: ['Cross-harness handoffs', 'Ownership transfer'],
+    excludedUses: ['Authentication maps', 'Org charts'],
+    primaryKind: 'grid', primaryBinding: 'actors', relations: ['sequence', 'evidence-for'], preferredFlow: 'horizontal',
+  },
+  {
+    id: 'phasewire.cycle-orbit', name: 'Cycle Orbit',
+    description: 'Radial map of remediation cycles and return-to-plan relationships.',
+    intendedUse: ['Multi-cycle remediation', 'Review return explanation'],
+    excludedUses: ['Single-step checklists'],
+    primaryKind: 'timeline', primaryBinding: 'cycles', relations: ['sequence', 'blocks', 'resolves'], preferredFlow: 'radial',
+  },
+  {
+    id: 'phasewire.evidence-web', name: 'Evidence Web',
+    description: 'Artifacts, events, and findings linked as an inspectable evidence web.',
+    intendedUse: ['Review evidence', 'Validation provenance'],
+    excludedUses: ['Secret stores', 'Binary dumps'],
+    primaryKind: 'evidence', primaryBinding: 'artifacts', relations: ['evidence-for', 'parent-child', 'depends-on'],
+    preferredFlow: 'adaptive',
+  },
+  {
+    id: 'phasewire.orientation-strip', name: 'Orientation Strip',
+    description: 'Compact interactive strip showing current phase, viewed phase, and cycle return.',
+    intendedUse: ['Workbench header orientation', 'Quick phase switching'],
+    excludedUses: ['Detailed architecture maps'],
+    primaryKind: 'timeline', primaryBinding: 'status', relations: ['sequence'], preferredFlow: 'horizontal',
+  },
 ]
 
 export const BUILTIN_VISUAL_TEMPLATES: readonly VisualTemplate[] = Object.freeze(TEMPLATE_SEEDS.map(makeTemplate))

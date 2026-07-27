@@ -17,9 +17,13 @@ export const selectors = {
   phaseReady: '[data-testid="phase-ready"]',
   phaseReview: '[data-testid="phase-review"]',
   recordDecision: '[data-testid="record-new-decision"]',
+  orientationMap: '[data-testid="orientation-map"]',
+  phaseConstellation: '[data-testid="phase-constellation"]',
+  relationLegend: '[data-testid="relation-legend"]',
   reportCanvas: '[data-testid="report-canvas"]',
   reportTitle: '[data-testid="report-title"]',
   staleBanner: '[data-testid="stale-banner"]',
+  workflowDiagrams: '[data-testid="workflow-diagrams"]',
   workflowTitleDisclosure: '[data-testid="workflow-title-disclosure"]',
   workflowTitleToggle: '[data-testid="workflow-title-toggle"]',
 } as const

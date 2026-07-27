@@ -241,6 +241,7 @@ export default function App() {
             onApprovePlan={handleApprovePlan}
             onAnnotation={handleAnnotation}
             onAuthorize={handleAuthorize}
+            onSelectPhase={handleSelectPhase}
           />
         </main>
         <EvidenceRail workflow={workflow} selectedPhase={selectedPhase} />

@@ -51,5 +51,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - run: npm run build -w @phasewire/core
+      - run: npm run build -w @phasewire/server
       - run: npm run build -w @phasewire/web
       - run: npm run quality:browser

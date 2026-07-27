@@ -18,6 +18,9 @@ const tempRoot = async (): Promise<string> => {
   return root
 }
 
+const hasPath = (files: readonly string[], root: string, ...parts: string[]): boolean =>
+  files.some((file) => file === join(root, ...parts))
+
 describe('adapter install', () => {
   it('parses host selectors', () => {
     expect(parseAdapterHosts('all')).toEqual(['claude', 'codex', 'grok', 'agy'])
@@ -33,24 +36,20 @@ describe('adapter install', () => {
       scope: 'project',
     })
 
-    expect(result.files.some((file) => file.endsWith('.claude/skills/phasewire/SKILL.md'))).toBe(
-      true,
-    )
-    expect(result.files.some((file) => file.endsWith('.claude/commands/phasewire.md'))).toBe(true)
-    expect(result.files.some((file) => file.endsWith('.claude/commands/phasewire/plan.md'))).toBe(
-      true,
-    )
+    expect(hasPath(result.files, root, '.claude', 'skills', 'phasewire', 'SKILL.md')).toBe(true)
+    expect(hasPath(result.files, root, '.claude', 'commands', 'phasewire.md')).toBe(true)
+    expect(hasPath(result.files, root, '.claude', 'commands', 'phasewire', 'plan.md')).toBe(true)
     expect(
-      result.files.some((file) => file.endsWith('.claude/plugins/phasewire/skills/plan/SKILL.md')),
+      hasPath(result.files, root, '.claude', 'plugins', 'phasewire', 'skills', 'plan', 'SKILL.md'),
     ).toBe(true)
 
-    const hub = await readFile(join(root, '.claude/skills/phasewire/SKILL.md'), 'utf8')
+    const hub = await readFile(join(root, '.claude', 'skills', 'phasewire', 'SKILL.md'), 'utf8')
     expect(hub).toContain('name: phasewire')
     expect(hub).toContain('/phasewire')
     expect(hub).toContain('never deploy')
 
     const plan = await readFile(
-      join(root, '.claude/plugins/phasewire/skills/plan/SKILL.md'),
+      join(root, '.claude', 'plugins', 'phasewire', 'skills', 'plan', 'SKILL.md'),
       'utf8',
     )
     expect(plan).toContain('name: plan')
@@ -65,16 +64,12 @@ describe('adapter install', () => {
       scope: 'project',
     })
 
-    expect(
-      result.files.some((file) => file.includes('.codex/skills/phasewire-plan/SKILL.md')),
-    ).toBe(true)
-    expect(result.files.some((file) => file.includes('.grok/skills/phasewire/SKILL.md'))).toBe(true)
-    expect(
-      result.files.some((file) => file.includes('.agent/skills/phasewire-resume/SKILL.md')),
-    ).toBe(true)
-    expect(result.files.some((file) => file.includes('.agent/workflows/phasewire-open.md'))).toBe(
+    expect(hasPath(result.files, root, '.codex', 'skills', 'phasewire-plan', 'SKILL.md')).toBe(true)
+    expect(hasPath(result.files, root, '.grok', 'skills', 'phasewire', 'SKILL.md')).toBe(true)
+    expect(hasPath(result.files, root, '.agent', 'skills', 'phasewire-resume', 'SKILL.md')).toBe(
       true,
     )
-    expect(result.files.some((file) => file.endsWith('.codex-plugin/plugin.json'))).toBe(true)
+    expect(hasPath(result.files, root, '.agent', 'workflows', 'phasewire-open.md')).toBe(true)
+    expect(hasPath(result.files, root, '.codex-plugin', 'plugin.json')).toBe(true)
   })
 })

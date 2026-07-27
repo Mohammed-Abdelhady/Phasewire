@@ -36,7 +36,10 @@ export const addMaintenanceCommands = (program: Command): void => {
     .command('reconcile')
     .argument('<workflow-id>')
     .option('--harness <harness>', 'Reconciling actor', 'user')
-    .requiredOption('--select-parent <event-id>', 'Current head selected as the reconciliation base')
+    .requiredOption(
+      '--select-parent <event-id>',
+      'Current head selected as the reconciliation base',
+    )
     .requiredOption('--rationale <text>', 'Reason for selecting this head')
     .option('--note <text>', 'Reconciliation note')
     .action(

@@ -12,7 +12,7 @@ Durable workflow meaning is stored as immutable, Git-portable events under `.pha
 
 ## Quick start
 
-Requires **Node.js 24+**. Run every command from the **repository root** (not `packages/*` or `apps/*`).
+Requires **Node.js 22.13+** (Node 24 is supported in CI but not required). Run every command from the **repository root** (not `packages/*` or `apps/*`).
 
 ```sh
 npm install
@@ -114,15 +114,18 @@ npm run dev
 Quality:
 
 ```sh
-npm run quality        # full gate used by pre-push
-npm run quality:commit # structure + lint + typecheck + unit tests
+npm run quality:commit # structure + static (build:deps + lint + typecheck) + unit tests
+npm run quality:push   # quality:commit + full build + audit + browser
+npm run quality        # alias of quality:push (pre-push gate)
 ```
 
-`npm run quality` runs structural limits, lint, strict typechecking, unit and integration tests, production builds, dependency auditing, and browser acceptance. Husky installs a fast pre-commit gate and the complete pre-push gate through `npm install`.
+`quality:commit` is the pre-commit gate. `quality:push` / `quality` add the full workspace build, high-severity dependency audit, and Playwright browser acceptance. `format` / `format:check` stay opt-in contributor hygiene and are not part of those aggregates. Husky installs both gates through `npm install`. Node minimum is **22.13+**; CI uses Node 24 across OS matrix plus a `verify-min-node` job on 22.13.x (browser job builds deps first).
 
 Every authored source, test, configuration, style, schema, and documentation file is limited to 350 physical lines. Generated and vendored files such as `package-lock.json`, `dist/`, and `node_modules/` are excluded. See [Quality gates](docs/quality-gates.md).
 
-Production `phasewire open` still launches an on-demand loopback service on an ephemeral port. Dev mode keeps the fixed 4317/4318 pair for Vite proxying.
+**Engineering bar:** [Code quality & engineering](CODE_QUALITY_AND_ENGINEERING.md) · **Review process:** [Code review](docs/code-review.md)
+
+The development web app runs through Vite and proxies project API requests to the loopback service on the fixed 4317/4318 pair. Production `phasewire open` still launches an on-demand loopback service on an ephemeral port.
 
 ## Durable and private state
 
@@ -140,4 +143,6 @@ The service binds to loopback, validates host and origin, and requires a per-ses
 - [Report design system](docs/report-design-system.md)
 - [Security and privacy](docs/security.md)
 - [Quality gates](docs/quality-gates.md)
+- [Code quality & engineering](CODE_QUALITY_AND_ENGINEERING.md)
+- [Code review process](docs/code-review.md)
 - [Contributor and harness rules](AGENTS.md)

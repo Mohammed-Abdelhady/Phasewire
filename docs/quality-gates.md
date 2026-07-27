@@ -7,11 +7,19 @@ Phasewire uses the same layered checks locally, in Git hooks, and in CI. A gate 
 | Layer | Command | Purpose |
 |---|---|---|
 | Structure | `npm run quality:structure` | Enforces the 350-line maximum for authored files and excludes generated/vendor output. |
-| Static | `npm run quality:static` | Runs ESLint with zero warnings and strict TypeScript project references. |
+| Static | `npm run quality:static` | Runs `build:deps` (`@phasewire/core` then `@phasewire/server`), ESLint with zero warnings, and strict TypeScript (`tsc -b`). Prettier remains opt-in via `npm run format` / `format:check`. |
 | Tests | `npm run quality:test` | Runs deterministic kernel, security, API, CLI, and component tests. |
-| Build | `npm run quality:build` | Produces every workspace package and the optimized visual workbench. |
-| Security | `npm run quality:security` | Fails on dependency advisories at high severity or above. |
-| Browser | `npm run quality:browser` | Exercises the integrated workflow and accessibility behavior in Chromium. |
+| Build | `npm run quality:build` | Full workspace build (`npm run build` / `--workspaces --if-present`), including CLI and the optimized visual workbench. |
+| Security | `npm run quality:security` | Fails on dependency advisories at high severity or above (`npm audit --audit-level=high`). |
+| Browser | `npm run quality:browser` | Runs Playwright e2e (`test:e2e`). Live service reuses core/server `dist` when present; otherwise prepares via `build:deps`. |
+
+Aggregate scripts:
+
+- `quality:commit` → `quality:structure` → `quality:static` → `quality:test`
+- `quality:push` → `quality:commit` → `quality:build` → `quality:security` → `quality:browser`
+- `quality` → `quality:push`
+
+Prep helpers (not separate gates): `build:deps` (core + server) and `build:web` (`@phasewire/web`). Topological stages run once per clean chain where practical: deps for static/typecheck, full monorepo build at the build gate, browser reuses prepared artifacts.
 
 `npm run quality` runs every layer in dependency order.
 
@@ -27,7 +35,7 @@ Set `HUSKY=0` only in non-interactive CI or production dependency installation. 
 
 ## CI
 
-The verification matrix runs on Linux, macOS, and Windows with Node.js 24. Browser acceptance runs separately on Chromium. The CI commands call the same npm scripts used by local hooks, so a green local gate predicts the remote result.
+Requires Node.js **22.13+** (`engines.node`). The verification matrix runs on Linux, macOS, and Windows with Node.js **24**, plus a `verify-min-node` job on **22.13.x**. Browser acceptance runs separately on Chromium after `build:deps` and `build:web`. The CI commands call the same npm scripts used by local hooks, so a green local gate predicts the remote result.
 
 ## Failure handling
 

@@ -9,10 +9,7 @@ import { addMaintenanceCommands } from './commands/maintenance.js'
 import { addHandoffCommands, addPhaseOwnershipCommands } from './commands/ownership.js'
 import { addProgressCommands } from './commands/progress.js'
 import { addTemplateCommands } from './commands/templates.js'
-import {
-  addDeploymentAuthorizationCommand,
-  addWorkflowCommands,
-} from './commands/workflows.js'
+import { addDeploymentAuthorizationCommand, addWorkflowCommands } from './commands/workflows.js'
 import { printJson, sanitizeTerminalField } from './output.js'
 
 export const createProgram = (): Command => {
@@ -51,7 +48,8 @@ const run = async (): Promise<void> => {
       printJson({ code, error: message, ...(nextCommand === undefined ? {} : { nextCommand }) })
     } else {
       const safeMessage = sanitizeTerminalField(message)
-      const safeNextCommand = nextCommand === undefined ? undefined : sanitizeTerminalField(nextCommand)
+      const safeNextCommand =
+        nextCommand === undefined ? undefined : sanitizeTerminalField(nextCommand)
       process.stderr.write(
         `phasewire: ${safeMessage}${safeNextCommand === undefined ? '' : `\nNext: ${safeNextCommand}`}\n`,
       )

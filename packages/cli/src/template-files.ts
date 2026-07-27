@@ -9,10 +9,7 @@ const isOutside = (root: string, candidate: string): boolean => {
 
 const resolvedRoot = async (projectRoot: string): Promise<string> => realpath(resolve(projectRoot))
 
-export const resolveTemplateInput = async (
-  projectRoot: string,
-  input: string,
-): Promise<string> => {
+export const resolveTemplateInput = async (projectRoot: string, input: string): Promise<string> => {
   const root = await resolvedRoot(projectRoot)
   const path = await realpath(resolve(input))
   if (isOutside(root, path)) throw new Error('Template input must remain inside the project root')
@@ -23,7 +20,8 @@ export const resolveTemplateInput = async (
 
 const ensureSecureDirectory = async (root: string, directory: string): Promise<void> => {
   const relativeDirectory = relative(root, directory)
-  if (isOutside(root, directory)) throw new Error('Template output must remain inside the project root')
+  if (isOutside(root, directory))
+    throw new Error('Template output must remain inside the project root')
   let current = root
   for (const segment of relativeDirectory.split(sep).filter(Boolean)) {
     current = resolve(current, segment)
@@ -50,7 +48,8 @@ export const writeTemplateOutput = async (
 ): Promise<string> => {
   const root = await resolvedRoot(projectRoot)
   const destination = resolve(output)
-  if (isOutside(root, destination)) throw new Error('Template output must remain inside the project root')
+  if (isOutside(root, destination))
+    throw new Error('Template output must remain inside the project root')
   await ensureSecureDirectory(root, dirname(destination))
 
   try {
@@ -58,7 +57,8 @@ export const writeTemplateOutput = async (
     if (metadata.isSymbolicLink() || !metadata.isFile()) {
       throw new Error('Template output destination must be a regular file')
     }
-    if (!overwrite) throw new Error(`Template output already exists: ${destination}; pass --force to replace it`)
+    if (!overwrite)
+      throw new Error(`Template output already exists: ${destination}; pass --force to replace it`)
   } catch (error: unknown) {
     if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error
   }

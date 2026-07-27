@@ -1,5 +1,5 @@
 ---
-description: Use for a read-only Phasewire status snapshot. Trigger with /phasewire:status or $phasewire-status.
+description: "Use for a read-only Phasewire status snapshot. Trigger with /phasewire:status or $phasewire-status."
 ---
 
 # Phasewire status

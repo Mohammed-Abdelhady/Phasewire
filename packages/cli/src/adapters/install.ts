@@ -1,12 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
-import {
-  ADAPTER_HOSTS,
-  ADAPTER_SKILLS,
-  type AdapterHost,
-  type AdapterSkill,
-} from './catalog.js'
+import { ADAPTER_HOSTS, ADAPTER_SKILLS, type AdapterHost, type AdapterSkill } from './catalog.js'
 import { resolveHostPlans, type AdapterScope, type HostInstallPlan } from './hosts.js'
 import {
   renderClaudeCommandMarkdown,
@@ -47,16 +42,11 @@ const writeText = async (path: string, contents: string, files: string[]): Promi
   files.push(path)
 }
 
-const installPlan = async (
-  plan: HostInstallPlan,
-  files: string[],
-): Promise<void> => {
+const installPlan = async (plan: HostInstallPlan, files: string[]): Promise<void> => {
   for (const skill of ADAPTER_SKILLS) {
     const skillDir = join(plan.skillRoot, skillDirectoryName(plan, skill))
     const rendered = renderSkillMarkdown(
-      plan.skillNamespace === 'plugin'
-        ? { ...skill, skillName: pluginSkillName(skill) }
-        : skill,
+      plan.skillNamespace === 'plugin' ? { ...skill, skillName: pluginSkillName(skill) } : skill,
       plan.host,
     )
     await writeText(join(skillDir, 'SKILL.md'), rendered, files)

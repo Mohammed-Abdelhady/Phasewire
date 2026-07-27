@@ -1,12 +1,5 @@
 export type AdapterSkillId =
-  | 'phasewire'
-  | 'plan'
-  | 'execute'
-  | 'review'
-  | 'resume'
-  | 'status'
-  | 'handoff'
-  | 'open'
+  'phasewire' | 'plan' | 'execute' | 'review' | 'resume' | 'status' | 'handoff' | 'open'
 
 export interface AdapterSkill {
   readonly argumentHint: string
@@ -72,12 +65,17 @@ export const ADAPTER_SKILLS: readonly AdapterSkill[] = [
     argumentHint: '<workflow-id>',
     cli: 'phasewire review <workflow-id> --harness <host> --json',
     description:
-      'Use when starting an independent Phasewire review. Trigger with /phasewire:review or $phasewire-review.',
+      'Use when starting an independent Phasewire review (workflow and/or code). Trigger with /phasewire:review or $phasewire-review. Always apply CODE_QUALITY_AND_ENGINEERING.md multi-axis bar.',
     steps: [
       'Require a workflow id. Load `phasewire status <workflow-id> --json` before reviewing.',
+      'Read `CODE_QUALITY_AND_ENGINEERING.md` and `docs/code-review.md` before judging code or findings.',
       'Run `phasewire review <workflow-id> --harness <host> --json`.',
+      'Apply picky multi-axis review on changed code: reuse, security, correctness, re-render, perf, a11y, i18n/RTL, gate honesty.',
       'Record findings with `phasewire finding` and validations with `phasewire validate`. Blocking findings must open remediation, not be silently cleared.',
-      'Finish with `phasewire complete-review` only after evidence is recorded.',
+      'Keep review findings local/draft-only by default. Do not post to GitHub unless the user explicitly authorizes an external write for this review.',
+      'Post to GitHub only when authorization is explicit AND the current repository and PR number are unambiguous; otherwise keep the review local.',
+      'When posting is authorized and target-bound, submit one batched formal review (summary + inline notes as needed; visual guide may live inside the batch body or local draft). Do not emit a mandatory multi-comment start/visual-guide/finish spam sequence.',
+      'Finish with `phasewire complete-review` only after evidence is recorded and blocking issues are filed or fixed.',
     ],
   },
   {

@@ -3,9 +3,16 @@ dist/
 coverage/
 .DS_Store
 *.log
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
 .hyperflow/
 .phasewire/.runtime/
 .phasewire/**/.runtime/
 playwright-report/
 test-results/
+.claude/settings.local.json
 

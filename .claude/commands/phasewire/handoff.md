@@ -1,5 +1,5 @@
 ---
-description: Use when creating a portable Phasewire handoff to another harness. Trigger with /phasewire:handoff or $phasewire-handoff.
+description: "Use when creating a portable Phasewire handoff to another harness. Trigger with /phasewire:handoff or $phasewire-handoff."
 ---
 
 # Phasewire handoff

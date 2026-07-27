@@ -4,12 +4,13 @@
   "private": true,
   "description": "Persistent visual control layer for harness-agnostic development workflows",
   "type": "module",
+  "packageManager": "npm@10.9.8",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=22.13.0"
   },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
@@ -17,12 +18,16 @@
     "check:commit-message": "node scripts/quality/check-commit-message.mjs",
     "dev": "concurrently -k -n service,web -c blue,green \"npm run dev -w @phasewire/server\" \"npm run dev -w @phasewire/web\"",
     "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test --config apps/web/playwright.config.ts",
+    "build:deps": "npm run build -w @phasewire/core && npm run build -w @phasewire/server",
+    "build:web": "npm run build -w @phasewire/web",
     "quality:structure": "npm run check:file-size",
-    "quality:static": "npm run lint && npm run typecheck",
+    "quality:static": "npm run build:deps && npm run lint && npm run typecheck",
     "quality:test": "npm test",
     "quality:build": "npm run build",
     "quality:security": "npm audit --audit-level=high",
@@ -31,6 +36,7 @@
     "quality:push": "npm run quality:commit && npm run quality:build && npm run quality:security && npm run quality:browser",
     "quality": "npm run quality:push",
     "phasewire": "node packages/cli/dist/index.js",
+    "adapters:install": "npm run build -w @phasewire/cli && node packages/cli/dist/index.js adapters install --host all --scope project",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -40,6 +46,7 @@
     "concurrently": "^9.2.1",
     "eslint": "^10.8.0",
     "husky": "^9.1.7",
+    "prettier": "3.9.6",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.48.1",
     "vitest": "^4.0.18"

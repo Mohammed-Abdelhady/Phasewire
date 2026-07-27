@@ -1,11 +1,11 @@
 ---
-name: phasewire-open
-description: |
+name: "phasewire-open"
+description: |-
   Use when opening the local Phasewire visual workbench. Trigger with /phasewire:open or $phasewire-open.
 argument-hint: "[workflow-id]"
 version: 0.1.0
 license: MIT
-compatibility: Antigravity (Agy); requires the phasewire CLI on PATH or via npm workspace script
+compatibility: "Antigravity (Agy); requires the phasewire CLI on PATH or via npm workspace script"
 tags: [phasewire, workflow, harness-adapter]
 ---
 
@@ -27,6 +27,8 @@ Portable Phasewire adapter for **Antigravity (Agy)**.
 - Blocking review findings require remediation plan → user approval → remediation execution → fresh review.
 - Phasewire never deploys. Do not run deploy commands from these adapters.
 - Prefer `phasewire ... --json` and summarize the machine-readable result for the user.
+- Code quality bar is `CODE_QUALITY_AND_ENGINEERING.md`. Review process is `docs/code-review.md`.
+- Never attribute commits, docs, or findings to an AI model.
 
 ## Steps
 

@@ -1,5 +1,8 @@
 import type { AdapterHost, AdapterSkill } from './catalog.js'
 
+/** YAML 1.2 double-quoted scalar via JSON string encoding. */
+export const yamlDoubleQuoted = (value: string): string => JSON.stringify(value)
+
 const hostLabel = (host: AdapterHost): string => {
   if (host === 'claude') return 'Claude Code'
   if (host === 'codex') return 'Codex'
@@ -18,15 +21,16 @@ const hostInvocation = (host: AdapterHost, skill: AdapterSkill): string => {
 export const renderSkillMarkdown = (skill: AdapterSkill, host: AdapterHost): string => {
   const label = hostLabel(host)
   const invocation = hostInvocation(host, skill)
+  const compatibility = `${label}; requires the phasewire CLI on PATH or via npm workspace script`
   const lines = [
     '---',
-    `name: ${skill.skillName}`,
-    'description: |',
+    `name: ${yamlDoubleQuoted(skill.skillName)}`,
+    'description: |-',
     `  ${skill.description}`,
-    `argument-hint: "${skill.argumentHint}"`,
+    `argument-hint: ${yamlDoubleQuoted(skill.argumentHint)}`,
     'version: 0.1.0',
     'license: MIT',
-    `compatibility: ${label}; requires the phasewire CLI on PATH or via npm workspace script`,
+    `compatibility: ${yamlDoubleQuoted(compatibility)}`,
     'tags: [phasewire, workflow, harness-adapter]',
     '---',
     '',
@@ -64,9 +68,10 @@ export const renderSkillMarkdown = (skill: AdapterSkill, host: AdapterHost): str
 }
 
 export const renderClaudeCommandMarkdown = (skill: AdapterSkill): string => {
+  const description = skill.description.split('\n')[0] ?? skill.description
   const body = [
     '---',
-    `description: ${skill.description.split('\n')[0] ?? skill.description}`,
+    `description: ${yamlDoubleQuoted(description)}`,
     '---',
     '',
     `# ${skill.title}`,

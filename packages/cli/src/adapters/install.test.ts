@@ -44,7 +44,7 @@ describe('adapter install', () => {
     ).toBe(true)
 
     const hub = await readFile(join(root, '.claude', 'skills', 'phasewire', 'SKILL.md'), 'utf8')
-    expect(hub).toContain('name: phasewire')
+    expect(hub).toMatch(/name:\s*"?phasewire"?/)
     expect(hub).toContain('/phasewire')
     expect(hub).toContain('never deploy')
 
@@ -52,7 +52,7 @@ describe('adapter install', () => {
       join(root, '.claude', 'plugins', 'phasewire', 'skills', 'plan', 'SKILL.md'),
       'utf8',
     )
-    expect(plan).toContain('name: plan')
+    expect(plan).toMatch(/name:\s*"?plan"?/)
     expect(plan).toContain('/phasewire:plan')
   })
 

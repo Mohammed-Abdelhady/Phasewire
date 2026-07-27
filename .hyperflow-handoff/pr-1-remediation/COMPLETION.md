@@ -4,11 +4,11 @@
 |---|---|
 | Built by | claude |
 | Base | `e1a5cdbd7430f2b959e79bf573ed8257d8d5a9ab` |
-| Head | `1fce94952e3c4b059c5a6a3e2372400ade957f84` |
-| Diff range | `e1a5cdbd7430f2b959e79bf573ed8257d8d5a9ab..1fce94952e3c4b059c5a6a3e2372400ade957f84` |
-| Commits | 14 |
-| Branch | `chore/congar-quality-standards` (worktree branch `pr-1`) |
-| Result | built · 10/10 sub-tasks |
+| Head | `992fb84c6dfdc1eaa1f331411cb7f394a4ba1a27` |
+| Diff range | `e1a5cdbd7430f2b959e79bf573ed8257d8d5a9ab..992fb84c6dfdc1eaa1f331411cb7f394a4ba1a27` |
+| Commits | 16 |
+| Branch | `chore/congar-quality-standards` (worktree `pr-1`) |
+| Result | built · 10/10 sub-tasks + post-push lockfile fix |
 
 ## Evidence
 
@@ -23,9 +23,12 @@
 - T8 PASS — browser CI topological build order (`6675eaf`)
 - T9 PASS — build:deps reuse across gates (`d4a2345`)
 - T10 PASS — docs/PR template match executable gates (`1fce949`)
+- Follow-up PASS — restore root @emnapi lock entries for npm ci (`992fb84`)
 
 ### Commits
 ```
+992fb84 fix(deps): restore lockfile entries for npm ci
+367a0fd chore(handoff): build complete pr-1-remediation
 1fce949 docs: correct quality gate contract
 d4a2345 perf(ci): reuse workspace build artifacts
 6675eaf fix(ci): build dependencies before browser tests
@@ -43,19 +46,17 @@ db28754 fix(adapters): escape generated skill frontmatter
 ```
 
 ### Files
- 91 files changed, 1656 insertions(+), 355 deletions(-)
+ 92 files changed, 1742 insertions(+), 355 deletions(-)
 
 ### Gates
-- tier full · per-batch affected pass · chain-end `npm run quality:push` PASS
-- structure · lint · typecheck · unit/integration (88) · full build · audit 0 · browser e2e 6/6
+- Local: `npm run quality:push` PASS (structure · lint · typecheck · 88 unit · full build · audit 0 · browser 6/6)
+- Remote CI (head `992fb84c6dfdc1eaa1f331411cb7f394a4ba1a27`): verify ubuntu/macOS/windows PASS · verify-min-node PASS · browser PASS
 
 ### Reviews
-- Batch 1 debugger PASS (T1/T4)
-- Batches 2–7 specialist-aligned PASS with pre-commit quality:commit each commit
-- Final integration PASS — frontmatter 32/32 parse, plan hint preserves quotes, review policy gated, metadata aligned
+- Per-batch PASS · final integration PASS · CI green after lockfile repair
 
 ### Risks
-- none blocking; Windows CI still needs remote evidence after push
+- none blocking
 
 ### Next
-- on_complete=deploy → push after structural gate; wait for GitHub checks; fresh L4 review before merge
+- Fresh L4 review of `e1a5cdbd7430f2b959e79bf573ed8257d8d5a9ab..992fb84c6dfdc1eaa1f331411cb7f394a4ba1a27` then explicit merge gate

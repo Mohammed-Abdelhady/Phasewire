@@ -39,10 +39,12 @@ function statusLabel(status: VisualStatus): string {
   return labels[status]
 }
 
-function documentIsRtl(): boolean {
-  if (typeof document === 'undefined') return false
-  const root = document.documentElement
-  return root.getAttribute('dir') === 'rtl' || getComputedStyle(root).direction === 'rtl'
+function elementIsRtl(element: Element | null): boolean {
+  if (element === null || typeof document === 'undefined') return false
+  const nearest = element.closest('[dir]')
+  if (nearest?.getAttribute('dir') === 'rtl') return true
+  if (nearest?.getAttribute('dir') === 'ltr') return false
+  return getComputedStyle(element).direction === 'rtl'
 }
 
 export function InteractiveGraph({
@@ -73,7 +75,7 @@ export function InteractiveGraph({
 
   const onKeyDown = (event: KeyboardEvent<SVGSVGElement>) => {
     if (focusId === undefined) return
-    const rtl = documentIsRtl()
+    const rtl = elementIsRtl(event.currentTarget)
     const goNext =
       event.key === 'ArrowDown' ||
       event.key === (rtl ? 'ArrowLeft' : 'ArrowRight')

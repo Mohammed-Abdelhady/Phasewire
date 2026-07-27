@@ -180,8 +180,7 @@ export function InteractiveGraph({
                 }}
               >
                 <title>
-                  {node.label}. {statusLabel(node.status)}
-                  {node.subtitle !== undefined ? `. ${node.subtitle}` : ''}
+                  {`${node.label}. ${statusLabel(node.status)}${node.subtitle !== undefined ? `. ${node.subtitle}` : ''}`}
                 </title>
                 <rect
                   width={node.width}

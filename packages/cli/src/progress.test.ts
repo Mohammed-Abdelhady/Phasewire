@@ -18,19 +18,55 @@ const temporaryRoot = async (): Promise<string> => {
   return root
 }
 
+const removeRoot = async (root: string): Promise<void> => {
+  let lastError: unknown
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      await rm(root, { force: true, recursive: true })
+      return
+    } catch (error) {
+      lastError = error
+      await new Promise((resolve) => {
+        setTimeout(resolve, 50 * (attempt + 1))
+      })
+    }
+  }
+  throw lastError
+}
+
 afterEach(async () => {
   vi.restoreAllMocks()
-  await Promise.all(roots.splice(0).map((root) => rm(root, { force: true, recursive: true })))
+  await Promise.all(roots.splice(0).map((root) => removeRoot(root)))
 })
 
+const OPEN_SAFE_COMMANDS = new Set([
+  'approve-plan',
+  'approve-remediation',
+  'authorize-deployment',
+  'claim',
+  'complete-execution',
+  'complete-remediation',
+  'complete-review',
+  'execute',
+  'plan',
+  'plan-remediation',
+  'review',
+  'start-remediation',
+])
+
 const run = async (root: string, ...arguments_: readonly string[]): Promise<void> => {
+  const command = arguments_[0]
+  const argv =
+    command !== undefined && OPEN_SAFE_COMMANDS.has(command) && !arguments_.includes('--no-open')
+      ? [...arguments_, '--no-open']
+      : arguments_
   await createProgram().parseAsync([
     process.execPath,
     'phasewire',
     '--project-root',
     root,
     '--json',
-    ...arguments_,
+    ...argv,
   ])
 }
 

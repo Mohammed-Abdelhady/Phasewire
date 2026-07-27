@@ -42,7 +42,9 @@ These rules apply to every harness working in this repository.
 ## Code review (Congar bar)
 
 - Picky multi-axis: reuse, security, correctness, re-render, perf, a11y, i18n/RTL, gate honesty.
-- Every PR: start comment → visual guide → formal review with finish line + Axes line.
+- Default: review output is local/draft-only (Phasewire findings + local notes). Never post to GitHub unless authorized.
+- GitHub post requires ALL of: explicit user authorization for an external write, unambiguous repository identity, and unambiguous PR number. Missing any precondition → stay local.
+- When authorized and target-bound: submit **one batched** formal review (summary + inline notes as needed; visual guide optional inside the batch body or local draft). No mandatory multi-comment start/visual-guide/finish sequence.
 - Self-authored PRs: GitHub `COMMENT` with honest Critical/Warning language.
 - Inline comments only on paths in the PR diff.
 - After fixes: resolve addressed review threads.

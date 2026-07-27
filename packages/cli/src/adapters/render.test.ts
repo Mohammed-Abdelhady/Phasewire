@@ -99,3 +99,42 @@ describe('renderClaudeCommandMarkdown frontmatter', () => {
     }
   })
 })
+
+describe('review skill GitHub write policy', () => {
+  const reviewSkill = ADAPTER_SKILLS.find((skill) => skill.id === 'review')
+  if (reviewSkill === undefined) {
+    throw new Error('review skill missing from ADAPTER_SKILLS')
+  }
+
+  const forbiddenPhrases = [
+    'If a GitHub PR is in scope: post start comment',
+    'post start comment, visual guide',
+    'and finish with `Finished reviewing this one.`',
+  ] as const
+
+  const requiredPhrases = [
+    'local/draft-only',
+    'explicitly authorizes an external write',
+    'repository and PR number are unambiguous',
+    'one batched formal review',
+  ] as const
+
+  it('renders local-default authorization and batched-write policy for every host', () => {
+    for (const host of ADAPTER_HOSTS) {
+      const skillMarkdown = renderSkillMarkdown(reviewSkill, host)
+
+      for (const phrase of requiredPhrases) {
+        expect(skillMarkdown).toContain(phrase)
+      }
+
+      for (const phrase of forbiddenPhrases) {
+        expect(skillMarkdown).not.toContain(phrase)
+      }
+    }
+
+    const claudeCommand = renderClaudeCommandMarkdown(reviewSkill)
+    for (const phrase of forbiddenPhrases) {
+      expect(claudeCommand).not.toContain(phrase)
+    }
+  })
+})

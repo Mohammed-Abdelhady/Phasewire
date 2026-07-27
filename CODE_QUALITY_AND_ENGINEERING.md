@@ -68,7 +68,7 @@
 - Titles: Conventional Commits (`feat:`, `fix:`, `docs:`, …).
 - Bodies: Summary / Test plan / Risk. Plain technical voice.
 - No em dashes, no hype, no AI footers, no “Generated with …”.
-- Every PR needs a **Visual guide** comment (see `docs/code-review.md`).
+- A **Visual guide** may live in the PR body, local draft, or (when posting is authorized) inside one batched formal review — not as a mandatory separate GitHub comment (see `docs/code-review.md`).
 
 ## Picky multi-axis review (mandatory)
 
@@ -85,7 +85,9 @@ Every non-trivial PR is scored on:
 | i18n/RTL | Logical CSS; no hard-coded LTR assumptions |
 | Gates honesty | Scripts/docs claim only what actually passes |
 
-Finish every formal review with:
+**GitHub write policy:** default is local/draft-only. Post only when the user explicitly authorizes an external write **and** repository identity and PR number are unambiguous. Then submit **one batched** formal review (no start/visual-guide/finish spam). Missing any precondition → keep findings local.
+
+When posting is authorized and target-bound, finish the batched formal review with:
 
 ```text
 Finished reviewing this one.

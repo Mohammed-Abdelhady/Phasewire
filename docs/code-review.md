@@ -11,10 +11,23 @@ How humans and harnesses review work in this repository.
 
 Both can produce blocking findings. Workflow blocking findings open remediation inside Phasewire. Code review blocking findings block merge until fixed.
 
-## GitHub PR lifecycle (mandatory)
+## GitHub PR lifecycle (authorization-gated)
 
-1. **Start comment** on the PR: `Starting review on this PR (head <sha>).`
-2. **Visual guide** if missing (exact heading):
+**Default: local/draft-only.** Review output is Phasewire findings + local notes. Never post to GitHub unless authorized.
+
+Post to GitHub only when **all** of the following hold:
+
+1. Explicit user authorization for an external GitHub write in the current request.
+2. Unambiguous current repository identity.
+3. Unambiguous PR number.
+
+Missing any precondition → keep the review local/draft-only; do not post.
+
+When authorized and target-bound:
+
+1. Diff review using picky multi-axis bar (`CODE_QUALITY_AND_ENGINEERING.md`).
+2. Submit **one batched** formal review (summary + inline notes as needed). Do **not** emit a mandatory multi-comment start/visual-guide/finish sequence.
+3. Optional visual guide content may live inside the batched review body or a local draft (exact heading when used):
 
 ```markdown
 ## Visual guide — what this PR does
@@ -22,12 +35,11 @@ Both can produce blocking findings. Workflow blocking findings open remediation 
 
 Include: one-liner · table or before→after · file map (3–8 paths) · 2-minute verify · out of scope.
 
-3. Humanize title/body (no AI-slop, no em dashes).
-4. Diff review using picky multi-axis bar (`CODE_QUALITY_AND_ENGINEERING.md`).
-5. Formal review with **inline comments** on Critical/Warning lines that appear in the PR diff only (wrong path → GitHub 422).
-6. Finish body **starts with** `Finished reviewing this one.`
-7. Self-authored → `COMMENT` event; third-party → `REQUEST_CHANGES` when Critical/Warning remain.
-8. After fixes: push, comment SHA + how verified, **resolve** addressed review threads.
+4. Inline comments only on Critical/Warning lines that appear in the PR diff (wrong path → GitHub 422).
+5. Batched finish body **starts with** `Finished reviewing this one.` plus Axes line when posting.
+6. Self-authored → `COMMENT` event; third-party → `REQUEST_CHANGES` when Critical/Warning remain.
+7. After fixes (when still authorized and bound): push, note SHA + how verified, **resolve** addressed review threads.
+8. Humanize title/body only when that edit is separately authorized (no AI-slop, no em dashes).
 
 ## Severity
 

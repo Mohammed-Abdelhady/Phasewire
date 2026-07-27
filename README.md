@@ -12,7 +12,7 @@ Durable workflow meaning is stored as immutable, Git-portable events under `.pha
 
 ## Quick start
 
-Requires **Node.js 24+**. Run every command from the **repository root** (not `packages/*` or `apps/*`).
+Requires **Node.js 22.13+** (Node 24 is supported in CI but not required). Run every command from the **repository root** (not `packages/*` or `apps/*`).
 
 ```sh
 npm install

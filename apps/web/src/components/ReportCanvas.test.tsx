@@ -48,7 +48,10 @@ describe('Phasewire workbench reports', () => {
     expect(reportMarkup).toContain('<bdi dir="ltr"')
     expect(reportMarkup).toContain('Resolve every material decision before approving this plan.')
     expect(reportMarkup).toContain('data-testid="orientation-map"')
+    expect(reportMarkup).toContain('data-testid="orientation-phase-plan"')
+    expect(reportMarkup).toContain('role="radiogroup"')
     expect(reportMarkup).toContain('data-testid="phase-constellation"')
+    expect(reportMarkup).toContain('role="application"')
     expect(reportMarkup).toContain('Phase constellation')
   })
 

@@ -197,8 +197,12 @@ export function readinessModel(workflow: WorkflowProjection): GraphModel {
         id: 'r-ready',
         from: 'review-clear',
         to: 'ready',
-        kind: 'blocks',
-        label: 'gates',
+        kind: workflow.findings.some((finding) => finding.classification === 'blocking')
+          ? 'blocks'
+          : 'evidence-for',
+        label: workflow.findings.some((finding) => finding.classification === 'blocking')
+          ? 'gates'
+          : 'clear',
         animated: !workflow.deploymentReady,
       },
       {

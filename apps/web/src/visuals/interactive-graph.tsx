@@ -1,6 +1,6 @@
 import { useCallback, useId, useMemo, useState, type KeyboardEvent } from 'react'
 
-import { connectedIds, layoutGraph, neighborsOf } from './geometry'
+import { connectedIds, layoutGraph, neighborsOf, truncateLabel } from './geometry'
 import { StatusShape } from './status-shape'
 import type { GraphModel, LayoutMode, RelationKind, VisualStatus } from './types'
 
@@ -39,6 +39,12 @@ function statusLabel(status: VisualStatus): string {
   return labels[status]
 }
 
+function documentIsRtl(): boolean {
+  if (typeof document === 'undefined') return false
+  const root = document.documentElement
+  return root.getAttribute('dir') === 'rtl' || getComputedStyle(root).direction === 'rtl'
+}
+
 export function InteractiveGraph({
   model,
   mode = 'adaptive',
@@ -67,14 +73,22 @@ export function InteractiveGraph({
 
   const onKeyDown = (event: KeyboardEvent<SVGSVGElement>) => {
     if (focusId === undefined) return
-    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+    const rtl = documentIsRtl()
+    const goNext =
+      event.key === 'ArrowDown' ||
+      event.key === (rtl ? 'ArrowLeft' : 'ArrowRight')
+    const goPrev =
+      event.key === 'ArrowUp' ||
+      event.key === (rtl ? 'ArrowRight' : 'ArrowLeft')
+
+    if (goNext) {
       const next = neighborsOf(model.edges, focusId, 'next')
       if (next !== undefined) {
         event.preventDefault()
         select(next)
       }
     }
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+    if (goPrev) {
       const prev = neighborsOf(model.edges, focusId, 'prev')
       if (prev !== undefined) {
         event.preventDefault()
@@ -109,8 +123,9 @@ export function InteractiveGraph({
         <svg
           className="visual-graph-svg"
           viewBox={`0 0 ${layout.width} ${layout.height}`}
-          role="img"
+          role="application"
           tabIndex={0}
+          aria-roledescription="interactive diagram"
           aria-labelledby={`${titleId} ${descId}`}
           data-testid={`${testId}-svg`}
           onKeyDown={onKeyDown}
@@ -152,6 +167,8 @@ export function InteractiveGraph({
           {layout.nodes.map((node) => {
             const focused = node.id === focusId
             const linkedNode = linked.has(node.id)
+            const displayLabel = truncateLabel(node.label, 18)
+            const displaySubtitle = truncateLabel(node.subtitle ?? statusLabel(node.status), 22)
             return (
               <g
                 key={node.id}
@@ -174,10 +191,10 @@ export function InteractiveGraph({
                 />
                 <StatusShape status={node.status} x={16} y={22} />
                 <text className="visual-node-label" x={28} y={26}>
-                  {node.label}
+                  {displayLabel}
                 </text>
                 <text className="visual-node-meta" x={28} y={44}>
-                  {node.subtitle ?? statusLabel(node.status)}
+                  {displaySubtitle}
                 </text>
                 {focused ? (
                   <rect

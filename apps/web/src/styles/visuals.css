@@ -54,7 +54,17 @@
   display: block;
   width: 100%;
   min-height: 180px;
+}
+
+.visual-graph-svg:focus,
+.orientation-map-svg:focus {
   outline: none;
+}
+
+.visual-graph-svg:focus-visible,
+.orientation-map-svg:focus-visible {
+  outline: 2px solid var(--active-text);
+  outline-offset: 2px;
 }
 
 .visual-edge path {
@@ -219,7 +229,47 @@
 }
 
 .orientation-map-copy { max-width: 42ch; }
-.orientation-map-svg { width: min(100%, 320px); min-height: 72px; }
+.orientation-map-visual {
+  display: grid;
+  gap: 12px;
+  min-width: min(100%, 320px);
+}
+.orientation-map-svg {
+  width: min(100%, 320px);
+  min-height: 72px;
+  pointer-events: none;
+}
+.orientation-map-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 8px;
+}
+.orientation-phase-button {
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 10px;
+  text-align: start;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.orientation-phase-button.is-selected,
+.orientation-phase-button.is-current {
+  border-color: var(--active-text);
+  background: var(--active-bg);
+}
+.orientation-phase-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.orientation-phase-meta {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+}
 .orientation-spine {
   fill: none;
   stroke: var(--border-strong);

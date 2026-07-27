@@ -31,5 +31,19 @@ describe('workflow graph models', () => {
       'ready',
       'authorize',
     ])
+    const reviewEdge = ready.edges.find((edge) => edge.id === 'r-ready')
+    expect(reviewEdge?.kind).toBe('blocks')
+    expect(reviewEdge?.label).toBe('gates')
+  })
+
+  it('marks clear review as evidence when no blockers remain', () => {
+    const clear = readinessModel({
+      ...SEEDED_WORKFLOW,
+      findings: SEEDED_WORKFLOW.findings.filter((finding) => finding.classification !== 'blocking'),
+      deploymentReady: true,
+    })
+    const reviewEdge = clear.edges.find((edge) => edge.id === 'r-ready')
+    expect(reviewEdge?.kind).toBe('evidence-for')
+    expect(reviewEdge?.label).toBe('clear')
   })
 })

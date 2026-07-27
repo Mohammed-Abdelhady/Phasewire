@@ -15,6 +15,14 @@ const H_GAP = 48
 const V_GAP = 36
 const PAD = 28
 
+export function truncateLabel(value: string | undefined, max = 18): string {
+  if (value === undefined) return ''
+  const trimmed = value.trim()
+  if (trimmed.length <= max) return trimmed
+  if (max <= 1) return '…'
+  return `${trimmed.slice(0, Math.max(1, max - 1)).trimEnd()}…`
+}
+
 export function nodeCenter(node: PlacedNode): GraphPoint {
   return { x: node.x + node.width / 2, y: node.y + node.height / 2 }
 }

@@ -30,53 +30,71 @@ export function OrientationMap({ workflow, selectedPhase, onSelect }: Orientatio
           <strong>{workflow.currentPhase}</strong> in cycle {String(workflow.cycleCount).padStart(2, '0')}.
         </p>
       </div>
-      <svg
-        className="orientation-map-svg"
-        viewBox={`0 0 ${width} ${height}`}
-        role="img"
-        aria-label="Compact phase path"
-        data-testid="orientation-map-svg"
-      >
-        <path
-          className="orientation-spine"
-          d={`M 16 ${height / 2} H ${width - 16}`}
-          pathLength={1}
-        />
-        {workflow.cycleCount > 1 ? (
+      <div className="orientation-map-visual">
+        <svg
+          className="orientation-map-svg"
+          viewBox={`0 0 ${width} ${height}`}
+          role="img"
+          aria-hidden="true"
+          focusable="false"
+          data-testid="orientation-map-svg"
+        >
           <path
-            className="orientation-return is-animated"
-            d={`M ${16 + step * 2} ${height / 2} C ${16 + step * 2} 12, ${16} 12, 16 ${height / 2}`}
+            className="orientation-spine"
+            d={`M 16 ${height / 2} H ${width - 16}`}
             pathLength={1}
           />
-        ) : null}
-        {workflow.phases.map((phase, index) => {
-          const x = 16 + index * step
-          const y = height / 2
-          const selected = phase.id === selectedPhase
-          const current = phase.id === workflow.currentPhase
-          return (
-            <g
-              key={phase.id}
-              className={`orientation-node${selected ? ' is-selected' : ''}${current ? ' is-current' : ''}`}
-              transform={`translate(${x} ${y})`}
-              data-testid={`orientation-node-${phase.id}`}
-              onClick={() => {
-                onSelect(phase.id)
-              }}
-              style={{ cursor: 'pointer' }}
-            >
-              <title>
-                {phase.label}
-                {current ? ' (current)' : ''}
-                {selected ? ' (viewing)' : ''}
-              </title>
-              <circle className="orientation-hit" r={16} />
-              <StatusShape status={mapStatus(phase.status)} x={0} y={0} size={14} />
-              {selected ? <circle className="orientation-ring" r={11} /> : null}
-            </g>
-          )
-        })}
-      </svg>
+          {workflow.cycleCount > 1 ? (
+            <path
+              className="orientation-return is-animated"
+              d={`M ${16 + step * 2} ${height / 2} C ${16 + step * 2} 12, ${16} 12, 16 ${height / 2}`}
+              pathLength={1}
+            />
+          ) : null}
+          {workflow.phases.map((phase, index) => {
+            const x = 16 + index * step
+            const y = height / 2
+            const selected = phase.id === selectedPhase
+            const current = phase.id === workflow.currentPhase
+            return (
+              <g
+                key={phase.id}
+                className={`orientation-node${selected ? ' is-selected' : ''}${current ? ' is-current' : ''}`}
+                transform={`translate(${x} ${y})`}
+                data-testid={`orientation-node-${phase.id}`}
+              >
+                <circle className="orientation-hit" r={16} />
+                <StatusShape status={mapStatus(phase.status)} x={0} y={0} size={14} />
+                {selected ? <circle className="orientation-ring" r={11} /> : null}
+              </g>
+            )
+          })}
+        </svg>
+        <div className="orientation-map-controls" role="radiogroup" aria-label="Select report phase">
+          {workflow.phases.map((phase) => {
+            const selected = phase.id === selectedPhase
+            const current = phase.id === workflow.currentPhase
+            return (
+              <button
+                key={phase.id}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                className={`orientation-phase-button${selected ? ' is-selected' : ''}${current ? ' is-current' : ''}`}
+                data-testid={`orientation-phase-${phase.id}`}
+                onClick={() => {
+                  onSelect(phase.id)
+                }}
+              >
+                <span className="orientation-phase-label">{phase.label}</span>
+                <span className="orientation-phase-meta">
+                  {current ? 'current' : selected ? 'viewing' : mapStatus(phase.status)}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
     </section>
   )
 }

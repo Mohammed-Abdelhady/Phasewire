@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { connectedIds, layoutGraph, neighborsOf } from './geometry'
+import { connectedIds, layoutGraph, neighborsOf, truncateLabel } from './geometry'
 import type { GraphModel } from './types'
 
 const sample: GraphModel = {
@@ -31,5 +31,12 @@ describe('visual geometry', () => {
     expect(neighborsOf(sample.edges, 'plan', 'next')).toBe('execute')
     expect(neighborsOf(sample.edges, 'execute', 'prev')).toBe('plan')
     expect([...connectedIds(sample.edges, 'review')].sort()).toEqual(['execute', 'plan', 'review'])
+  })
+
+  it('truncates long labels for fixed SVG node width', () => {
+    expect(truncateLabel('short')).toBe('short')
+    expect(truncateLabel('this label is definitely too long for the node', 18)).toBe(
+      'this label is def…',
+    )
   })
 })

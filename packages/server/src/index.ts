@@ -3,6 +3,7 @@ import { realpath } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
+import { parseServiceCliOptions } from './cli-options.js'
 import { startService } from './service.js'
 
 export { actionNames, buildServiceApp } from './app.js'
@@ -22,16 +23,18 @@ export type {
   WorkflowEventInput,
 } from './types.js'
 
-const valueAfter = (values: readonly string[], flag: string): string | undefined => {
-  const index = values.indexOf(flag)
-  return index === -1 ? undefined : values[index + 1]
-}
-
 const run = async (): Promise<void> => {
-  const projectRootInput = valueAfter(process.argv.slice(2), '--project-root') ?? process.env.PHASEWIRE_PROJECT_ROOT
-  if (projectRootInput === undefined) throw new Error('Missing --project-root')
-  const projectRoot = await realpath(resolve(projectRootInput))
-  const service = await startService({ projectRoot })
+  const options = parseServiceCliOptions(process.argv.slice(2))
+  if (options.projectRoot === undefined) throw new Error('Missing --project-root')
+  const projectRoot = await realpath(resolve(options.projectRoot))
+  const service = await startService({
+    projectRoot,
+    ...(options.port === undefined ? {} : { port: options.port }),
+  })
+
+  process.stdout.write(
+    `phasewire service listening on ${service.endpoint.origin} (pid ${String(service.endpoint.pid)})\n`,
+  )
 
   const shutdown = (): void => {
     void service.close().finally(() => {

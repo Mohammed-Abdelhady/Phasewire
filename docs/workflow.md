@@ -12,14 +12,19 @@ Review findings with blocking severity return the workflow to remediation planni
 
 ## Start and inspect
 
+From the monorepo root, invoke the CLI through npm until the binary is linked globally:
+
 ```sh
-phasewire init
-phasewire plan "Add idempotent webhook retries" --harness codex
-phasewire status --json
-phasewire open <workflow-id>
+npm run build
+npm run phasewire -- init
+npm run phasewire -- plan "Add idempotent webhook retries" --harness codex
+npm run phasewire -- status --json
+npm run phasewire -- open <workflow-id>
 ```
 
 `phasewire plan` opens the visual workbench by default. Use `--no-open` in automation. The browser records material decisions and the explicit plan approval event.
+
+If `phasewire: command not found` appears, you are either outside the repo root or expecting a global install. Use `npm run phasewire -- …` or `./node_modules/.bin/phasewire …` instead.
 
 ## Phase ownership and continuation
 
@@ -80,7 +85,7 @@ Authorization can be recorded only after readiness and only through an interacti
 CLI commands always start with `phasewire`. Install host adapters once per project or user profile:
 
 ```sh
-phasewire adapters install --host all --scope project
+npm run phasewire -- adapters install --host all --scope project
 ```
 
 After install and a host restart:

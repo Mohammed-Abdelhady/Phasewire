@@ -114,11 +114,12 @@ npm run dev
 Quality:
 
 ```sh
-npm run quality        # full gate used by pre-push
-npm run quality:commit # structure + lint + typecheck + unit tests
+npm run quality:commit # structure + static (build:deps + lint + typecheck) + unit tests
+npm run quality:push   # quality:commit + full build + audit + browser
+npm run quality        # alias of quality:push (pre-push gate)
 ```
 
-`npm run quality` runs structural limits, lint, format check, strict typechecking, unit and integration tests, production builds, dependency auditing, and browser acceptance. Husky installs a fast pre-commit gate and the complete pre-push gate through `npm install`.
+`quality:commit` is the pre-commit gate. `quality:push` / `quality` add the full workspace build, high-severity dependency audit, and Playwright browser acceptance. `format` / `format:check` stay opt-in contributor hygiene and are not part of those aggregates. Husky installs both gates through `npm install`. Node minimum is **22.13+**; CI uses Node 24 across OS matrix plus a `verify-min-node` job on 22.13.x (browser job builds deps first).
 
 Every authored source, test, configuration, style, schema, and documentation file is limited to 350 physical lines. Generated and vendored files such as `package-lock.json`, `dist/`, and `node_modules/` are excluded. See [Quality gates](docs/quality-gates.md).
 

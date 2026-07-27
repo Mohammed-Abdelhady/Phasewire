@@ -72,12 +72,12 @@ When the workflow under review includes code changes, **also** apply the GitHub 
 ## Quality gates (local truth)
 
 ```sh
-npm run quality:commit   # structure + lint + typecheck + unit tests
-npm run quality:push     # + build + audit + browser e2e
+npm run quality:commit   # structure + static (build:deps + lint + typecheck) + unit tests
+npm run quality:push     # quality:commit + full build + audit + browser e2e
 npm run quality          # alias of quality:push
 ```
 
-CI runs the same npm scripts on Node 24 (Linux/macOS/Windows + Chromium e2e).
+`format` / `format:check` are opt-in hygiene, not aggregate gates. CI uses Node 24 (Linux/macOS/Windows) plus `verify-min-node` on 22.13.x; the browser job builds deps first.
 
 ## Inline comment rules
 

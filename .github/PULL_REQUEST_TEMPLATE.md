@@ -16,5 +16,5 @@
 - [ ] No secrets in diff
 - [ ] Package boundaries respected (core / server / cli / web)
 - [ ] Files stay ≤ 350 lines
-- [ ] Visual guide comment posted on the PR thread
+- [ ] Visual guide prepared (local draft or authorized batched review)
 - [ ] Docs updated if public command, security, or quality rule changed

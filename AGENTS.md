@@ -33,8 +33,9 @@ These rules apply to every harness working in this repository.
 
 ## Quality gates
 
-- Before commit: `npm run quality:commit` (structure, build core/server for types, lint, typecheck, format check, tests).
-- Before push: `npm run quality:push`.
+- Before commit: `npm run quality:commit` (structure + static (`build:deps` + lint + typecheck) + unit tests).
+- Before push: `npm run quality:push` (`quality:commit` + full build + audit + browser).
+- `format` / `format:check` are opt-in contributor hygiene until made blocking; they are not part of `quality`, `quality:commit`, or `quality:push`.
 - Never bypass hooks with `--no-verify` and never weaken a gate to make it pass.
 - E2E tests use Playwright selectors from `apps/web/e2e/utils/selectors.ts`; do not use fixed sleeps.
 - A distinct feature, fix, documentation update, or tooling change receives its own Conventional Commit.

@@ -35,7 +35,7 @@ Set `HUSKY=0` only in non-interactive CI or production dependency installation. 
 
 ## CI
 
-The verification matrix runs on Linux, macOS, and Windows with Node.js 24. Browser acceptance runs separately on Chromium. The CI commands call the same npm scripts used by local hooks, so a green local gate predicts the remote result.
+Requires Node.js **22.13+** (`engines.node`). The verification matrix runs on Linux, macOS, and Windows with Node.js **24**, plus a `verify-min-node` job on **22.13.x**. Browser acceptance runs separately on Chromium after `build:deps` and `build:web`. The CI commands call the same npm scripts used by local hooks, so a green local gate predicts the remote result.
 
 ## Failure handling
 
